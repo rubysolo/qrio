@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'RMagick'
+
 module Qrio
 end
 

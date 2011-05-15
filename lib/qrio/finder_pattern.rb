@@ -17,8 +17,10 @@ class Qrio::FinderPattern
 
   # a horizontal or vertical slice of a finder pattern
   class Slice
-    MAX_EDGE_DIFF   = 1
-    MAX_OFFSET_DIFF = 2
+    MAX_SLICE_WIDTH_DIFF  = 2
+    MAX_SLICE_LENGTH_DIFF = 4
+    MAX_EDGE_DIFF         = 1
+    MAX_OFFSET_DIFF       = 2
 
     attr_accessor :x1, :y1, :x2, :y2, :orientation
 
@@ -38,6 +40,18 @@ class Qrio::FinderPattern
       end
     end
 
+    def to_s
+      "#{ orientation } : (#{ (horizontal? ? left : top) * ',' }) -> (#{ (horizontal? ? right : bottom) * ','}) [#{ width }x#{ height }]"
+    end
+
+    def to_a
+      [x1, y1, x2, y2]
+    end
+
+    def <=>(other)
+      to_a <=> other.to_a
+    end
+
     def horizontal?; orientation == :horizontal; end
     def vertical?;   orientation == :vertical;   end
 
@@ -55,7 +69,7 @@ class Qrio::FinderPattern
     def width;  right_edge - left_edge + 1; end
 
     def center
-      [left + width/2.0, top + height/2.0]
+      [left_edge + width/2.0, top_edge + height/2.0]
     end
 
     # number of pixels down from top for horizontal slices,
@@ -68,12 +82,17 @@ class Qrio::FinderPattern
     # same finder pattern
     def intersects?(other_slice)
       return false if other_slice.orientation == orientation
+
       if horizontal?
         left_edge <= other_slice.left_edge && right_edge >= other_slice.right_edge &&
-        top_edge  >= other_slice.top_edge && bottom_edge <= other_slice.bottom_edge
+        top_edge  >= other_slice.top_edge && bottom_edge <= other_slice.bottom_edge &&
+        (height - other_slice.width).abs < MAX_SLICE_WIDTH_DIFF &&
+        (width - other_slice.height).abs < MAX_SLICE_LENGTH_DIFF
       else
         left_edge >= other_slice.left_edge && right_edge <= other_slice.right_edge &&
         top_edge  <= other_slice.top_edge && bottom_edge >= other_slice.bottom_edge
+        (width - other_slice.height).abs < MAX_SLICE_WIDTH_DIFF &&
+        (height - other_slice.width).abs < MAX_SLICE_LENGTH_DIFF
       end
     end
 
@@ -119,10 +138,10 @@ class Qrio::FinderPattern
 
     # join adjacent slices together into a single thicker slice
     def union(other_slice)
-      top    = [top_edge, other_slice.top_edge].min
+      top    = [top_edge,    other_slice.top_edge].min
       bottom = [bottom_edge, other_slice.bottom_edge].max
-      left   = [left_edge, other_slice.left_edge].min
-      right  = [right_edge, other_slice.right_edge].max
+      left   = [left_edge,   other_slice.left_edge].min
+      right  = [right_edge,  other_slice.right_edge].max
 
       Slice.new(left, top, right, bottom)
     end
@@ -137,22 +156,34 @@ class Qrio::FinderPattern
     def find_candidates(bitmap)
       hmatches = []
       vmatches = []
-      buffer   = [0]
       previous = false
 
-      bitmap.rows.each_with_index do |row, y|
-        row.pixels.each_with_index do |pixel, x|
-          if match_pixel(previous, pixel, x, y, buffer)
-            hmatches << Slice.new(x - buffer.sum, y, x, y)
+      rows = bitmap.rows
+      columns = bitmap.columns
+
+      rows.times do |y|
+        buffer = [0]
+        columns.times do |x|
+          pixel = bitmap.get_pixels(x, y, 1, 1).first
+
+          this_matches, previous = match_pixel(previous, pixel, x, y, buffer)
+          if this_matches
+            total_width = buffer.inject(0){|a,i| a += i }
+            hmatches << Slice.new(x - total_width, y, x, y)
           end
         end
       end
       hmatches = group_adjacent(hmatches)
 
-      bitmap.columns.each_with_index do |column, x|
-        column.pixels.each_with_index do |pixel, y|
-          if match_pixel(previous, pixel, x, y, buffer)
-            vmatches << Slice.new(x, y - buffer.sum, x, y)
+      columns.times do |x|
+        buffer = [0]
+        rows.times do |y|
+          pixel = bitmap.get_pixels(x, y, 1, 1).first
+
+          this_matches, previous = match_pixel(previous, pixel, x, y, buffer)
+          if this_matches
+            total_height = buffer.inject(0){|a,i| a += i }
+            vmatches << Slice.new(x, y - total_height, x, y)
           end
         end
       end
@@ -166,13 +197,20 @@ class Qrio::FinderPattern
     def group_adjacent(slices)
       grouped = []
 
-      slices.each do |slice|
+      slices.sort.each do |slice|
         if grouped.empty?
           grouped << slice
         else
+          added = false
+
           grouped.each_with_index do |g, index|
-            grouped[index] = g.union(slice) if g.adjacent?(slice)
+            if g.adjacent?(slice)
+              added = true
+              grouped[index] = g.union(slice)
+            end
           end
+
+          grouped << slice unless added
         end
       end
 
@@ -201,23 +239,28 @@ class Qrio::FinderPattern
       ty <= ly && ly <= by
     end
 
-    def match_pixel(previous, pixel, x, y, buffer, mode)
-      if pixel == previous
+    def match_pixel(previous, pixel, x, y, buffer)
+      pixel = pixel.to_color == "black"
+
+      if pixel === previous
         # one more pixel just like the last, increment length
-        buffer.last += 1
-        return false
+        buffer << buffer.pop + 1
+        return [false, pixel]
       else
         # transition
-        buffer << 1
-        buffer.shift while buffer.length > 5
-        previous = pixel
+        found_match = matches_finder_pattern?(buffer)
 
-        matches_finder_pattern?(buffer)
+        buffer << 1
+        buffer.shift while buffer.first == 0
+        buffer.shift while buffer.length > 5
+
+        [found_match, pixel]
       end
     end
 
     def matches_finder_pattern?(widths)
       return false if widths.length < 5
+
       baseline = widths.first
       widths.map{|w| (w.to_f / baseline.to_f).round } == RATIO
     end
