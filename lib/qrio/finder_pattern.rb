@@ -17,8 +17,8 @@ class Qrio::FinderPattern
 
   # a horizontal or vertical slice of a finder pattern
   class Slice
-    MAX_SLICE_WIDTH_DIFF  = 2
-    MAX_SLICE_LENGTH_DIFF = 4
+    MAX_SLICE_WIDTH_DIFF  = 0.05
+    MAX_SLICE_LENGTH_DIFF = 0.1
     MAX_EDGE_DIFF         = 1
     MAX_OFFSET_DIFF       = 2
 
@@ -86,13 +86,13 @@ class Qrio::FinderPattern
       if horizontal?
         left_edge <= other_slice.left_edge && right_edge >= other_slice.right_edge &&
         top_edge  >= other_slice.top_edge && bottom_edge <= other_slice.bottom_edge &&
-        (height - other_slice.width).abs < MAX_SLICE_WIDTH_DIFF &&
-        (width - other_slice.height).abs < MAX_SLICE_LENGTH_DIFF
+        ((height - other_slice.width).abs / height.to_f) < MAX_SLICE_WIDTH_DIFF &&
+        ((width - other_slice.height).abs / width.to_f) < MAX_SLICE_LENGTH_DIFF
       else
         left_edge >= other_slice.left_edge && right_edge <= other_slice.right_edge &&
         top_edge  <= other_slice.top_edge && bottom_edge >= other_slice.bottom_edge
-        (width - other_slice.height).abs < MAX_SLICE_WIDTH_DIFF &&
-        (height - other_slice.width).abs < MAX_SLICE_LENGTH_DIFF
+        ((width - other_slice.height).abs / width.to_f) < MAX_SLICE_WIDTH_DIFF &&
+        ((height - other_slice.width).abs / height.to_f) < MAX_SLICE_LENGTH_DIFF
       end
     end
 
