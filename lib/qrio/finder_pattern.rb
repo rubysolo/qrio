@@ -14,6 +14,7 @@
 
 class Qrio::FinderPattern
   RATIO = [1,1,3,1,1] # any horizontal or vertical slice should have pixels in this ratio
+  DEBUG_MODE = true
 
   # a horizontal or vertical slice of a finder pattern
   class Slice
@@ -189,7 +190,25 @@ class Qrio::FinderPattern
       end
       vmatches = group_adjacent(vmatches)
 
-      find_intersections(hmatches, vmatches)
+      intersections = find_intersections(hmatches, vmatches)
+
+      if DEBUG_MODE
+        gc = Magick::Draw.new
+        gc.stroke 'red'
+        gc.stroke_width 1
+
+        intersections.each do |fp|
+          gc.line fp.left_edge,  fp.top_edge,    fp.right_edge, fp.top_edge
+          gc.line fp.right_edge, fp.top_edge,    fp.right_edge, fp.bottom_edge
+          gc.line fp.right_edge, fp.bottom_edge, fp.left_edge,  fp.bottom_edge
+          gc.line fp.left_edge,  fp.bottom_edge, fp.left_edge,  fp.top_edge
+        end
+
+        gc.draw bitmap
+        bitmap.write 'annotated.png'
+      end
+
+      intersections
     end
 
     # adjacent row/column slices of (close to) the same length/width
