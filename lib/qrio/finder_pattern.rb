@@ -25,12 +25,12 @@ class Qrio::FinderPattern
     attr_accessor :x1, :y1, :x2, :y2, :orientation
 
     def initialize(x1, y1, x2, y2)
-      self.x1 = x1
-      self.y1 = y1
-      self.x2 = x2
-      self.y2 = y2
+      @x1 = x1
+      @y1 = y1
+      @x2 = x2
+      @y2 = y2
 
-      self.orientation = case
+      @orientation = case
       when width > height
         :horizontal
       when height > width
