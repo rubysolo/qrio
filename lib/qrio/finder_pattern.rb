@@ -166,7 +166,7 @@ class Qrio::FinderPattern
         columns.times do |x|
           pixel = bitmap.get_pixels(x, y, 1, 1).first
 
-          this_matches, previous = match_pixel(previous, pixel, x, y, buffer)
+          this_matches, previous = match_pixel(previous, pixel, buffer)
           if this_matches
             total_width = buffer.inject(0){|a,i| a += i }
             hmatches << Slice.new(x - total_width, y, x, y)
@@ -180,7 +180,7 @@ class Qrio::FinderPattern
         rows.times do |y|
           pixel = bitmap.get_pixels(x, y, 1, 1).first
 
-          this_matches, previous = match_pixel(previous, pixel, x, y, buffer)
+          this_matches, previous = match_pixel(previous, pixel, buffer)
           if this_matches
             total_height = buffer.inject(0){|a,i| a += i }
             vmatches << Slice.new(x, y - total_height, x, y)
@@ -239,7 +239,7 @@ class Qrio::FinderPattern
       ty <= ly && ly <= by
     end
 
-    def match_pixel(previous, pixel, x, y, buffer)
+    def match_pixel(previous, pixel, buffer)
       pixel = pixel.to_color == "black"
 
       if pixel === previous
