@@ -76,7 +76,7 @@ class Qrio::Slice
 
   # the ideal grouped slice should have short side to long side ratio of 3/7
   def has_correct_ratio?
-    (0.35..0.49).include? ratio
+    (0.25..0.59).include? ratio
   end
 
   # number of pixels down from top for horizontal slices,

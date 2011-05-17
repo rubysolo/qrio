@@ -80,6 +80,8 @@ class Qrio::FinderPattern
       end
 
       matches = group_adjacent(matches)
+      matches = matches.select(&:has_correct_ratio?)
+
       debug_mode do
         @gc ||= Magick::Draw.new
         @gc.stroke(direction == :vertical ? 'green' : 'blue')

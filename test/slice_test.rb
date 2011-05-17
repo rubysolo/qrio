@@ -91,16 +91,25 @@ class TestQrioSlice < Test::Unit::TestCase
   end
 
   def test_slice_ratio
-   slice1 = @s.new(16, 27, 62, 45)
-   assert slice1.has_correct_ratio?
+    correct = [
+      [16, 27, 62, 45],
+      [27, 16, 44, 62],
+      [10, 27, 62, 45],
+      [27, 10, 44, 62],
+      [ 5, 21, 57, 35]
+    ].map{|a| @s.new(*a) }
 
-   slice2 = @s.new(27, 16, 44, 62)
-   assert slice2.has_correct_ratio?, slice2.ratio
+    correct.each do |slice|
+      assert slice.has_correct_ratio?, slice.ratio
+    end
 
-   slice3 = @s.new(16, 27, 62, 28)
-   assert ! slice3.has_correct_ratio?
+    incorrect = [
+      [16, 27, 62, 28],
+      [27, 16, 30, 62],
+    ].map{|a| @s.new(*a) }
 
-   slice4 = @s.new(27, 16, 30, 62)
-   assert ! slice4.has_correct_ratio?
+    incorrect.each do |slice|
+      assert ! slice.has_correct_ratio?, slice.ratio
+    end
   end
 end
