@@ -62,6 +62,23 @@ class Qrio::Slice
     [left_edge + width/2.0, top_edge + height/2.0]
   end
 
+  def long_side
+    horizontal? ? width : height
+  end
+
+  def short_side
+    horizontal? ? height : width
+  end
+
+  def ratio
+    short_side.to_f / long_side.to_f
+  end
+
+  # the ideal grouped slice should have short side to long side ratio of 3/7
+  def has_correct_ratio?
+    (0.35..0.49).include? ratio
+  end
+
   # number of pixels down from top for horizontal slices,
   # number of pixels right from left for vertical slices
   def offset

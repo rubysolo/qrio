@@ -89,4 +89,18 @@ class TestQrioSlice < Test::Unit::TestCase
 
    assert slice1.intersects? slice2
   end
+
+  def test_slice_ratio
+   slice1 = @s.new(16, 27, 62, 45)
+   assert slice1.has_correct_ratio?
+
+   slice2 = @s.new(27, 16, 44, 62)
+   assert slice2.has_correct_ratio?, slice2.ratio
+
+   slice3 = @s.new(16, 27, 62, 28)
+   assert ! slice3.has_correct_ratio?
+
+   slice4 = @s.new(27, 16, 30, 62)
+   assert ! slice4.has_correct_ratio?
+  end
 end
