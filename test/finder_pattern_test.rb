@@ -34,6 +34,27 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert_equal 10, vslice.top_edge
     assert_equal 44, vslice.right_edge
     assert_equal 62, vslice.bottom_edge
+
+    img = Magick::Image.read(fixture_img_path("finder_pattern3.png")).first
+    hslices = @fp.find_matches(img, :horizontal)
+
+    assert_equal 1, hslices.length
+    hslice = hslices.first
+
+    assert_equal  5, hslice.left_edge
+    assert_equal 21, hslice.top_edge
+    assert_equal 57, hslice.right_edge
+    assert_equal 35, hslice.bottom_edge
+
+    vslices = @fp.find_matches(img, :vertical)
+
+    assert_equal 1, vslices.length
+    vslice = vslices.first
+
+    assert_equal 22, vslice.left_edge
+    assert_equal  3, vslice.top_edge
+    assert_equal 38, vslice.right_edge
+    assert_equal 54, vslice.bottom_edge
   end
 
   def test_finder_pattern_detection
@@ -52,10 +73,24 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert_equal 1, finder_patterns.length
 
     fp = finder_patterns.first
-    assert_equal 5, fp.top_edge
-    assert_equal 4, fp.left_edge
+    assert_equal  5, fp.top_edge
+    assert_equal  4, fp.left_edge
     assert_equal 52, fp.width
     assert_equal 51, fp.height
+
+    img = Magick::Image.read(fixture_img_path("finder_pattern3.png")).first
+    finder_patterns = @fp.extract(img)
+    assert_equal 1, finder_patterns.length
+
+    fp = finder_patterns.first
+    assert_equal  3, fp.top_edge
+    assert_equal  5, fp.left_edge
+    assert_equal 53, fp.width
+    assert_equal 52, fp.height
+
+    img = Magick::Image.read(fixture_img_path("no_finder_pattern1.png")).first
+    finder_patterns = @fp.extract(img)
+    assert_equal 0, finder_patterns.length
   end
 
   private

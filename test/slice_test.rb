@@ -83,5 +83,10 @@ class TestQrioSlice < Test::Unit::TestCase
    slice2 = @s.new(27, 16, 44, 62)
 
    assert slice1.intersects? slice2
+
+   slice1 = @s.new( 5, 21, 57, 35)
+   slice2 = @s.new(22,  3, 38, 54)
+
+   assert slice1.intersects? slice2
   end
 end
