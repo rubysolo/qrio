@@ -71,4 +71,22 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert_equal 2, slice4.top_edge
     assert_equal 6, slice4.bottom_edge
   end
+
+  def test_finder_pattern_detection
+    img = Magick::Image.read(fixture_img_path("finder_pattern1.png")).first
+    finder_patterns = @fp.extract(img)
+    assert_equal 1, finder_patterns.length
+
+    fp = finder_patterns.first
+    assert_equal 10, fp.top_edge
+    assert_equal 10, fp.left_edge
+    assert_equal 52, fp.width
+    assert_equal 52, fp.height
+  end
+
+  private
+
+  def fixture_img_path(filename)
+    File.expand_path("../fixtures/#{ filename }", __FILE__)
+  end
 end
