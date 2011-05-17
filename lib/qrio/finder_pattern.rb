@@ -45,6 +45,13 @@ class Qrio::FinderPattern
       "#{ orientation } : (#{ (horizontal? ? left : top) * ',' }) -> (#{ (horizontal? ? right : bottom) * ','}) [#{ width }x#{ height }]"
     end
 
+    def draw_debug(gc)
+      gc.line left_edge,  top_edge,    right_edge, top_edge
+      gc.line right_edge, top_edge,    right_edge, bottom_edge
+      gc.line right_edge, bottom_edge, left_edge,  bottom_edge
+      gc.line left_edge,  bottom_edge, left_edge,  top_edge
+    end
+
     def to_a
       [x1, y1, x2, y2]
     end
@@ -155,6 +162,11 @@ class Qrio::FinderPattern
     end
 
     def find_candidates(bitmap)
+      debug_mode do
+        @gc = Magick::Draw.new
+        @gc.stroke_width 1
+      end
+
       hmatches = []
       vmatches = []
       previous = false
@@ -175,6 +187,10 @@ class Qrio::FinderPattern
         end
       end
       hmatches = group_adjacent(hmatches)
+      debug_mode do
+        @gc.stroke 'blue'
+        hmatches.each{|h| h.draw_debug(@gc) }
+      end
 
       columns.times do |x|
         buffer = []
@@ -189,23 +205,21 @@ class Qrio::FinderPattern
         end
       end
       vmatches = group_adjacent(vmatches)
+      debug_mode do
+        @gc.stroke 'green'
+        vmatches.each{|v| v.draw_debug(@gc) }
+      end
 
       intersections = find_intersections(hmatches, vmatches)
 
       if DEBUG_MODE
-        gc = Magick::Draw.new
-        gc.stroke 'red'
-        gc.stroke_width 1
+        @gc.stroke 'red'
+        @gc.stroke_width 1
 
-        intersections.each do |fp|
-          gc.line fp.left_edge,  fp.top_edge,    fp.right_edge, fp.top_edge
-          gc.line fp.right_edge, fp.top_edge,    fp.right_edge, fp.bottom_edge
-          gc.line fp.right_edge, fp.bottom_edge, fp.left_edge,  fp.bottom_edge
-          gc.line fp.left_edge,  fp.bottom_edge, fp.left_edge,  fp.top_edge
-        end
+        intersections.each {|i| i.draw_debug(@gc) }
 
-        gc.draw bitmap
-        bitmap.write 'annotated.png'
+        @gc.draw bitmap
+        bitmap.write 'debug.png'
       end
 
       intersections
@@ -272,6 +286,10 @@ class Qrio::FinderPattern
 
       baseline = widths.first
       widths.map{|w| (w.to_f / baseline.to_f).round } == RATIO
+    end
+
+    def debug_mode
+      yield if DEBUG_MODE
     end
   end
 end
