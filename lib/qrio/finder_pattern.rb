@@ -68,13 +68,12 @@ class Qrio::FinderPattern
 
           pixel = bitmap.get_pixels(x, y, 1, 1).first
 
-          this_matches, previous = match_pixel(previous, pixel, buffer)
-          if this_matches
-            total_width = buffer.inject(0){|a,i| a += i }
+          matched_width, previous = match_pixel(previous, pixel, buffer)
+          if matched_width > 0
             if direction == :vertical
-              matches << Qrio::Slice.new(x, y - total_width, x, y)
+              matches << Qrio::Slice.new(x, y - matched_width, x, y)
             else
-              matches << Qrio::Slice.new(x - total_width, y, x, y)
+              matches << Qrio::Slice.new(x - matched_width, y, x, y)
             end
           end
         end
@@ -134,15 +133,18 @@ class Qrio::FinderPattern
         # one more pixel just like the last, increment length
         run_length = buffer.pop || 0
         buffer << run_length + 1
-        return [false, pixel]
+        return [0, pixel]
       else
         # transition
-        found_match = matches_finder_pattern?(buffer)
+        matched_width = 0
+        if matches_finder_pattern?(buffer)
+          matched_width = buffer.inject(0){|sum,w| sum + w }
+        end
 
         buffer << 1
         buffer.shift while buffer.length > 5
 
-        [found_match, pixel]
+        [matched_width, pixel]
       end
     end
 

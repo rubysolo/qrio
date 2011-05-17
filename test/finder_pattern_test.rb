@@ -20,7 +20,7 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert_equal 1, hslices.length
     hslice = hslices.first
 
-    assert_equal 16, hslice.left_edge
+    assert_equal 10, hslice.left_edge
     assert_equal 27, hslice.top_edge
     assert_equal 62, hslice.right_edge
     assert_equal 45, hslice.bottom_edge
@@ -31,7 +31,7 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     vslice = vslices.first
 
     assert_equal 27, vslice.left_edge
-    assert_equal 16, vslice.top_edge
+    assert_equal 10, vslice.top_edge
     assert_equal 44, vslice.right_edge
     assert_equal 62, vslice.bottom_edge
   end
@@ -44,8 +44,18 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     fp = finder_patterns.first
     assert_equal 10, fp.top_edge
     assert_equal 10, fp.left_edge
+    assert_equal 53, fp.width
+    assert_equal 53, fp.height
+
+    img = Magick::Image.read(fixture_img_path("finder_pattern2.png")).first
+    finder_patterns = @fp.extract(img)
+    assert_equal 1, finder_patterns.length
+
+    fp = finder_patterns.first
+    assert_equal 5, fp.top_edge
+    assert_equal 4, fp.left_edge
     assert_equal 52, fp.width
-    assert_equal 52, fp.height
+    assert_equal 51, fp.height
   end
 
   private
