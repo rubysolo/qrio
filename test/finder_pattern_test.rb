@@ -13,28 +13,28 @@ class TestQrioFinderPattern < Test::Unit::TestCase
   end
 
   def test_orientation_detection
-    slice1 = @fp::Slice.new(0, 2, 8, 2)
+    slice1 = Qrio::Slice.new(0, 2, 8, 2)
     assert slice1.horizontal?
     assert ! slice1.vertical?
 
-    slice2 = @fp::Slice.new(2, 0, 2, 8)
+    slice2 = Qrio::Slice.new(2, 0, 2, 8)
     assert ! slice2.horizontal?
     assert slice2.vertical?
 
-    slice3 = @fp::Slice.new(0, 0, 8, 8)
+    slice3 = Qrio::Slice.new(0, 0, 8, 8)
     assert ! slice3.horizontal?
     assert ! slice3.vertical?
   end
 
   def test_slice_adjacency
-    slice1 = @fp::Slice.new(0, 2, 8, 2)
-    assert slice1.adjacent?(@fp::Slice.new(0, 3, 8, 3))
-    assert ! slice1.adjacent?(@fp::Slice.new(5, 3, 13, 3))
+    slice1 = Qrio::Slice.new(0, 2, 8, 2)
+    assert slice1.adjacent?(Qrio::Slice.new(0, 3, 8, 3))
+    assert ! slice1.adjacent?(Qrio::Slice.new(5, 3, 13, 3))
   end
 
   def test_union
-    slice1 = @fp::Slice.new(0, 2, 8, 2)
-    slice2 = @fp::Slice.new(0, 3, 8, 3)
+    slice1 = Qrio::Slice.new(0, 2, 8, 2)
+    slice2 = Qrio::Slice.new(0, 3, 8, 3)
 
     assert slice1.adjacent?(slice2)
     assert slice2.adjacent?(slice1)
@@ -47,7 +47,7 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert_equal 2, slice2.top_edge
     assert_equal 3, slice2.bottom_edge
 
-    slice3 = @fp::Slice.new(0, 4, 8, 4)
+    slice3 = Qrio::Slice.new(0, 4, 8, 4)
     assert slice2.adjacent?(slice3)
     assert slice3.adjacent?(slice2)
 
@@ -59,7 +59,7 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert_equal 2, slice3.top_edge
     assert_equal 4, slice3.bottom_edge
 
-    slice4 = @fp::Slice.new(0, 6, 8, 6)
+    slice4 = Qrio::Slice.new(0, 6, 8, 6)
     assert slice3.adjacent?(slice4)
     assert slice4.adjacent?(slice3)
 
