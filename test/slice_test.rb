@@ -77,4 +77,11 @@ class TestQrioSlice < Test::Unit::TestCase
     assert_equal 2, slice4.top_edge
     assert_equal 6, slice4.bottom_edge
   end
+
+  def test_intersection_detection
+   slice1 = @s.new(16, 27, 62, 45)
+   slice2 = @s.new(27, 16, 44, 62)
+
+   assert slice1.intersects? slice2
+  end
 end

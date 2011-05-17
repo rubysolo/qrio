@@ -1,7 +1,7 @@
 # a horizontal or vertical slice of a finder pattern
 class Qrio::Slice
-  MAX_SLICE_WIDTH_DIFF  = 0.05
-  MAX_SLICE_LENGTH_DIFF = 0.1
+  MAX_SLICE_WIDTH_DIFF  = 0.08
+  MAX_SLICE_LENGTH_DIFF = 0.19
   MAX_EDGE_DIFF         = 1
   MAX_OFFSET_DIFF       = 2
 
