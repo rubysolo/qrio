@@ -94,6 +94,35 @@ class Qrio::FinderPattern
       intersections
     end
 
+    def find_matches(bitmap, orientation)
+      outer, inner = bitmap.rows, bitmap.columns
+      matches = []
+      previous = false
+
+      outer.times do |o|
+        buffer = []
+        inner.times do |i|
+          x, y = i, o
+          pixel = bitmap.get_pixels(x, y, 1, 1).first
+
+          this_matches, previous = match_pixel(previous, pixel, buffer)
+          if this_matches
+            total_width = buffer.inject(0){|a,i| a += i }
+            matches << Qrio::Slice.new(x - total_width, y, x, y)
+          end
+        end
+      end
+
+      matches = group_adjacent(matches)
+      debug_mode do
+        @gc ||= Magick::Draw.new
+        @gc.stroke 'blue'
+        matches.each{|h| h.draw_debug(@gc) }
+      end
+
+      matches
+    end
+
     # adjacent row/column slices of (close to) the same length/width
     # can be combined into one rectangle
     def group_adjacent(slices)

@@ -10,6 +10,25 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert @fp.matches_finder_pattern?([ 1, 1, 3, 1, 1])
     assert @fp.matches_finder_pattern?([10,10,30,10,10])
     assert @fp.matches_finder_pattern?([11, 9,28,10,12])
+    assert @fp.matches_finder_pattern?([ 8, 8,19, 9, 8])
+  end
+
+  def test_slice_detection
+    img = Magick::Image.read(fixture_img_path("finder_pattern1.png")).first
+    hslices = @fp.find_matches(img, :horizontal)
+
+    assert_equal 1, hslices.length
+    hslice = hslices.first
+
+    assert_equal 16, hslice.left_edge
+    assert_equal 27, hslice.top_edge
+    assert_equal 62, hslice.right_edge
+    assert_equal 45, hslice.bottom_edge
+
+    vslices = @fp.find_matches(img, :vertical)
+
+    assert_equal 1, vslices.length
+    vslice = vslices.first
   end
 
   def test_finder_pattern_detection
