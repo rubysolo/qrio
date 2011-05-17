@@ -163,7 +163,7 @@ class Qrio::FinderPattern
       columns = bitmap.columns
 
       rows.times do |y|
-        buffer = [0]
+        buffer = []
         columns.times do |x|
           pixel = bitmap.get_pixels(x, y, 1, 1).first
 
@@ -177,7 +177,7 @@ class Qrio::FinderPattern
       hmatches = group_adjacent(hmatches)
 
       columns.times do |x|
-        buffer = [0]
+        buffer = []
         rows.times do |y|
           pixel = bitmap.get_pixels(x, y, 1, 1).first
 
@@ -263,14 +263,14 @@ class Qrio::FinderPattern
 
       if pixel === previous
         # one more pixel just like the last, increment length
-        buffer << buffer.pop + 1
+        run_length = buffer.pop || 0
+        buffer << run_length + 1
         return [false, pixel]
       else
         # transition
         found_match = matches_finder_pattern?(buffer)
 
         buffer << 1
-        buffer.shift while buffer.first == 0
         buffer.shift while buffer.length > 5
 
         [found_match, pixel]
