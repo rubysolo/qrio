@@ -36,49 +36,8 @@ class Qrio::FinderPattern
         @gc.stroke_width 1
       end
 
-      hmatches = []
-      vmatches = []
-      previous = false
-
-      rows = bitmap.rows
-      columns = bitmap.columns
-
-      rows.times do |y|
-        buffer = []
-        columns.times do |x|
-          pixel = bitmap.get_pixels(x, y, 1, 1).first
-
-          this_matches, previous = match_pixel(previous, pixel, buffer)
-          if this_matches
-            total_width = buffer.inject(0){|a,i| a += i }
-            hmatches << Qrio::Slice.new(x - total_width, y, x, y)
-          end
-        end
-      end
-      hmatches = group_adjacent(hmatches)
-      debug_mode do
-        @gc.stroke 'blue'
-        hmatches.each{|h| h.draw_debug(@gc) }
-      end
-
-      columns.times do |x|
-        buffer = []
-        rows.times do |y|
-          pixel = bitmap.get_pixels(x, y, 1, 1).first
-
-          this_matches, previous = match_pixel(previous, pixel, buffer)
-          if this_matches
-            total_height = buffer.inject(0){|a,i| a += i }
-            vmatches << Qrio::Slice.new(x, y - total_height, x, y)
-          end
-        end
-      end
-      vmatches = group_adjacent(vmatches)
-      debug_mode do
-        @gc.stroke 'green'
-        vmatches.each{|v| v.draw_debug(@gc) }
-      end
-
+      hmatches = find_matches(bitmap, :horizontal)
+      vmatches = find_matches(bitmap, :vertical)
       intersections = find_intersections(hmatches, vmatches)
 
       if DEBUG_MODE
