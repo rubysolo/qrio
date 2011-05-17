@@ -13,7 +13,15 @@
 # the same width, and the inner square should be 3 times as wide.
 
 class Qrio::FinderPattern
-  RATIO = [1,1,3,1,1] # any horizontal or vertical slice should have pixels in this ratio
+  # any horizontal or vertical slice should have pixels with ratio 1,1,3,1,1
+  # we allow some slop around those values
+  RATIO = [
+    0.75..1.25,
+    0.75..1.25,
+    2.10..3.90,
+    0.75..1.25,
+    0.75..1.25
+  ]
   DEBUG_MODE = true
 
   # a horizontal or vertical slice of a finder pattern
@@ -284,8 +292,17 @@ class Qrio::FinderPattern
     def matches_finder_pattern?(widths)
       return false if widths.length < 5
 
-      baseline = widths.first
-      widths.map{|w| (w.to_f / baseline.to_f).round } == RATIO
+      RATIO.zip(normalized_ratio(widths)).all? do |range, value|
+        range.include? value
+      end
+    end
+
+    def normalized_ratio(widths)
+      scale = 0
+      widths.each_with_index{|w,i| scale += w unless i == 2 }
+      scale /= 4.0
+
+      widths.map{|w| w / scale }
     end
 
     def debug_mode
