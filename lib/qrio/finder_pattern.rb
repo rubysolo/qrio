@@ -248,16 +248,6 @@ class Qrio::FinderPattern
       intersections
     end
 
-    # test intersection of two line segments
-    def intersects?(h, v)
-      lx, ly, rx, ry = *h
-      tx, ty, bx, by = *v
-
-      # x from vertical is in horizontal range and y from horizontal is in vertical range
-      lx <= tx && tx <= rx &&
-      ty <= ly && ly <= by
-    end
-
     def match_pixel(previous, pixel, buffer)
       pixel = pixel.to_color == "black"
 

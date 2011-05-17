@@ -12,10 +12,6 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert @fp.matches_finder_pattern?([11, 9,28,10,12])
   end
 
-  def test_intersection_detection
-    assert @fp.intersects?([0, 2, 8, 2], [2, 0, 2, 8])
-  end
-
   def test_orientation_detection
     slice1 = @fp::Slice.new(0, 2, 8, 2)
     assert slice1.horizontal?
