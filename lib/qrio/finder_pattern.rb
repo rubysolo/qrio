@@ -8,7 +8,7 @@
 
 # This class is responsible for locating finder patterns in
 # a bitmap.  The QR finder pattern is a solid square of black
-# pixels surrounded by an outline of white pixels, surrounded by 
+# pixels surrounded by an outline of white pixels, surrounded by
 # an outline of black pixels.  Each outer border should be about
 # the same width, and the inner square should be 3 times as wide.
 
@@ -94,8 +94,10 @@ class Qrio::FinderPattern
       intersections
     end
 
-    def find_matches(bitmap, orientation)
+    def find_matches(bitmap, direction)
       outer, inner = bitmap.rows, bitmap.columns
+      outer, inner = inner, outer if direction == :vertical
+
       matches = []
       previous = false
 
@@ -103,12 +105,18 @@ class Qrio::FinderPattern
         buffer = []
         inner.times do |i|
           x, y = i, o
+          x, y = y, x if direction == :vertical
+
           pixel = bitmap.get_pixels(x, y, 1, 1).first
 
           this_matches, previous = match_pixel(previous, pixel, buffer)
           if this_matches
             total_width = buffer.inject(0){|a,i| a += i }
-            matches << Qrio::Slice.new(x - total_width, y, x, y)
+            if direction == :vertical
+              matches << Qrio::Slice.new(x, y - total_width, x, y)
+            else
+              matches << Qrio::Slice.new(x - total_width, y, x, y)
+            end
           end
         end
       end
@@ -116,7 +124,7 @@ class Qrio::FinderPattern
       matches = group_adjacent(matches)
       debug_mode do
         @gc ||= Magick::Draw.new
-        @gc.stroke 'blue'
+        @gc.stroke(direction == :vertical ? 'green' : 'blue')
         matches.each{|h| h.draw_debug(@gc) }
       end
 

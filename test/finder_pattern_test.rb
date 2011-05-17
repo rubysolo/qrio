@@ -29,6 +29,11 @@ class TestQrioFinderPattern < Test::Unit::TestCase
 
     assert_equal 1, vslices.length
     vslice = vslices.first
+
+    assert_equal 27, vslice.left_edge
+    assert_equal 16, vslice.top_edge
+    assert_equal 44, vslice.right_edge
+    assert_equal 62, vslice.bottom_edge
   end
 
   def test_finder_pattern_detection
