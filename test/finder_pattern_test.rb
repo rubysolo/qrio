@@ -58,42 +58,33 @@ class TestQrioFinderPattern < Test::Unit::TestCase
   end
 
   def test_finder_pattern_detection
-    img = Magick::Image.read(fixture_img_path("finder_pattern1.png")).first
-    finder_patterns = @fp.extract(img)
-    assert_equal 1, finder_patterns.length
+    assert_finder_pattern("finder_pattern1.png", [[10, 10, 53, 53]])
+    assert_finder_pattern("finder_pattern2.png", [[ 5,  4, 52, 51]])
+    assert_finder_pattern("finder_pattern3.png", [[ 3,  5, 53, 52]])
 
-    fp = finder_patterns.first
-    assert_equal 10, fp.top_edge
-    assert_equal 10, fp.left_edge
-    assert_equal 53, fp.width
-    assert_equal 53, fp.height
-
-    img = Magick::Image.read(fixture_img_path("finder_pattern2.png")).first
-    finder_patterns = @fp.extract(img)
-    assert_equal 1, finder_patterns.length
-
-    fp = finder_patterns.first
-    assert_equal  5, fp.top_edge
-    assert_equal  4, fp.left_edge
-    assert_equal 52, fp.width
-    assert_equal 51, fp.height
-
-    img = Magick::Image.read(fixture_img_path("finder_pattern3.png")).first
-    finder_patterns = @fp.extract(img)
-    assert_equal 1, finder_patterns.length
-
-    fp = finder_patterns.first
-    assert_equal  3, fp.top_edge
-    assert_equal  5, fp.left_edge
-    assert_equal 53, fp.width
-    assert_equal 52, fp.height
-
-    img = Magick::Image.read(fixture_img_path("no_finder_pattern1.png")).first
-    finder_patterns = @fp.extract(img)
-    assert_equal 0, finder_patterns.length
+    assert_no_finder_pattern("no_finder_pattern1.png")
   end
 
   private
+
+  # coordinates should be an array of arrays
+  def assert_finder_pattern(filename, coordinates)
+    img = Magick::Image.read(fixture_img_path(filename)).first
+    finder_patterns = @fp.extract(img)
+    assert_equal coordinates.length, finder_patterns.length
+    finder_patterns.zip(coordinates).each do |fp, c|
+      assert_equal c[0], fp.top_edge
+      assert_equal c[1], fp.left_edge
+      assert_equal c[2], fp.width
+      assert_equal c[3], fp.height
+    end
+  end
+
+  def assert_no_finder_pattern(filename)
+    img = Magick::Image.read(fixture_img_path(filename)).first
+    finder_patterns = @fp.extract(img)
+    assert_equal 0, finder_patterns.length
+  end
 
   def fixture_img_path(filename)
     File.expand_path("../fixtures/#{ filename }", __FILE__)
