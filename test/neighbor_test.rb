@@ -33,12 +33,12 @@ class TestQrioNeighbor < Test::Unit::TestCase
     assert ! n32.right_angle?
 
     n31 = @n.new(s3, s1)
-    assert_equal '-3.142', '%.3f' % n31.angle
+    assert_equal '3.142', '%.3f' % n31.angle
     assert_equal 294, n31.distance.round
     assert n31.right_angle?
 
     n13 = @n.new(s1, s3)
-    assert_equal '-0.000', '%.3f' % n13.angle
+    assert_equal '0.000', '%.3f' % n13.angle
     assert_equal 294, n13.distance.round
     assert n13.right_angle?
   end

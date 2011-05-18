@@ -11,9 +11,10 @@ class Qrio::Neighbor
     @destination = destination
 
     dx = destination.center.first - source.center.first
-    dy = destination.center.last  - source.center.last
+    # images are top down, geometry is bottom up.  invert.
+    dy = source.center.last - destination.center.last
 
-    @angle    = Math.atan2(dy * -1, dx)
+    @angle    = Math.atan2(dy, dx)
     @distance = Math.sqrt(dx ** 2 + dy ** 2)
   end
 
