@@ -1,9 +1,9 @@
 # track angle and distance between two Finder Patterns
 class Qrio::Neighbor
   attr_accessor :source, :destination, :angle, :distance
-  ANGLE  = Math::PI / 8
-  ZERO   = 0..ANGLE
-  NINETY = (ANGLE * 3)..(ANGLE * 5)
+  ANGLE     = Math::PI / 8
+  ZERO      = 0..ANGLE
+  NINETY    = (ANGLE * 3)..(ANGLE * 5)
   ONEEIGHTY = (ANGLE * 7)..(ANGLE * 8)
 
   def initialize(source, destination)
@@ -16,6 +16,10 @@ class Qrio::Neighbor
 
     @angle    = Math.atan2(dy, dx)
     @distance = Math.sqrt(dx ** 2 + dy ** 2)
+  end
+
+  def coordinates
+    [source.center, destination.center].flatten
   end
 
   def right_angle?

@@ -29,6 +29,12 @@ class Qrio::FinderPattern
     def extract(bitmap)
       candidates = find_candidates(bitmap)
 
+      debug_mode do
+        @gc.stroke 'red'
+        @gc.stroke_width 1
+        candidates.each {|i| i.draw_debug(@gc) }
+      end
+
       if candidates.length >= 3
         # force common orientation for sorting to work correctly
         candidates.each{|c| c.orientation = :vertical }
@@ -38,12 +44,36 @@ class Qrio::FinderPattern
           c.add_neighbors candidates
         end
 
-        shared_corner = candidates.select do |c|
+        shared_corners = candidates.select do |c|
           c.neighbors.select{|n| n.right_angle? }.count > 1
         end
 
-        # TODO : extract, rotate, transform
+        if shared_corner = shared_corners.first
+          # TODO : what about multiple candidates?
+          debug_mode do
+            @gc.stroke 'cyan'
+            shared_corner.neighbors.each do |n|
+              @gc.line *n.coordinates
+            end
+          end
+
+          bounds = shared_corner
+          shared_corner.neighbors.select{|n| n.right_angle? }.each do |n|
+            bounds = bounds.union(n.destination)
+          end
+
+          debug_mode do
+            @gc.draw bitmap
+            finder_pattern = bitmap.crop(bounds.left_edge, bounds.top_edge, bounds.width, bounds.height)
+            finder_pattern.write 'debug.png'
+          end
+        else
+          puts "no shared corner!"
+        end
+
+        # TODO : rotate, transform
       end
+
 
       candidates
     end
@@ -58,15 +88,6 @@ class Qrio::FinderPattern
       vmatches = find_matches(bitmap, :vertical)
       intersections = find_intersections(hmatches, vmatches)
 
-      if DEBUG_MODE
-        @gc.stroke 'red'
-        @gc.stroke_width 1
-
-        intersections.each {|i| i.draw_debug(@gc) }
-
-        @gc.draw bitmap
-        bitmap.write 'debug.png'
-      end
 
       intersections
     end
