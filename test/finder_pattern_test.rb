@@ -11,6 +11,8 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert @fp.matches_finder_pattern?([10,10,30,10,10])
     assert @fp.matches_finder_pattern?([11, 9,28,10,12])
     assert @fp.matches_finder_pattern?([ 8, 8,19, 9, 8])
+    assert @fp.matches_finder_pattern?([11,12,34,13,12])
+    assert @fp.matches_finder_pattern?([12,20,46,19,14])
   end
 
   def test_slice_detection
@@ -44,7 +46,7 @@ class TestQrioFinderPattern < Test::Unit::TestCase
     assert_equal  5, hslice.left_edge
     assert_equal 21, hslice.top_edge
     assert_equal 57, hslice.right_edge
-    assert_equal 35, hslice.bottom_edge
+    assert_equal 36, hslice.bottom_edge
 
     vslices = @fp.find_matches(img, :vertical)
 

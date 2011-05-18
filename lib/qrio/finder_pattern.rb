@@ -16,11 +16,11 @@ class Qrio::FinderPattern
   # any horizontal or vertical slice should have pixels with ratio 1,1,3,1,1
   # we allow some slop around those values
   RATIO = [
-    0.75..1.25,
-    0.75..1.25,
+    0.70..1.30,
+    0.70..1.30,
     2.10..3.90,
-    0.75..1.25,
-    0.75..1.25
+    0.70..1.30,
+    0.70..1.30
   ]
   DEBUG_MODE = true
 
