@@ -2,8 +2,8 @@
 class Qrio::Slice
   MAX_SLICE_WIDTH_DIFF  = 0.15
   MAX_SLICE_LENGTH_DIFF = 0.35
-  MAX_EDGE_DIFF         = 1
-  MAX_OFFSET_DIFF       = 2
+  MAX_EDGE_DIFF         = 0.05
+  MAX_OFFSET_DIFF       = 0.25
 
   attr_accessor :x1, :y1, :x2, :y2, :orientation, :neighbors
 
@@ -119,28 +119,36 @@ class Qrio::Slice
   end
 
   def left_edges_match?(other_slice)
-    (other_slice.left_edge - left_edge).abs <= MAX_EDGE_DIFF
+    (other_slice.left_edge - left_edge).abs / long_side.to_f <= MAX_EDGE_DIFF
   end
 
   def right_edges_match?(other_slice)
-    (other_slice.right_edge - right_edge).abs <= MAX_EDGE_DIFF
+    (other_slice.right_edge - right_edge).abs / long_side.to_f <= MAX_EDGE_DIFF
   end
 
   def top_edges_match?(other_slice)
-    (other_slice.top_edge - top_edge).abs <= MAX_EDGE_DIFF
+    (other_slice.top_edge - top_edge).abs / long_side.to_f <= MAX_EDGE_DIFF
   end
 
   def bottom_edges_match?(other_slice)
-    (other_slice.bottom_edge - bottom_edge).abs <= MAX_EDGE_DIFF
+    (other_slice.bottom_edge - bottom_edge).abs / long_side.to_f <= MAX_EDGE_DIFF
   end
 
   def within_offset_range?(other_slice)
+    offset_ranges(other_slice).any?{|r| r <= MAX_OFFSET_DIFF }
+  end
+
+  def offset_ranges(other_slice)
     if horizontal?
-      ((other_slice.bottom_edge - top_edge).abs <= MAX_OFFSET_DIFF) ||
-      ((other_slice.top_edge - bottom_edge).abs <= MAX_OFFSET_DIFF)
+      [
+        (other_slice.bottom_edge - top_edge).abs / long_side.to_f,
+        (other_slice.top_edge - bottom_edge).abs / long_side.to_f
+      ]
     else
-      ((other_slice.right_edge - left_edge).abs <= MAX_OFFSET_DIFF) ||
-      ((other_slice.left_edge - right_edge).abs <= MAX_OFFSET_DIFF)
+      [
+        (other_slice.right_edge - left_edge).abs / long_side.to_f,
+        (other_slice.left_edge - right_edge).abs / long_side.to_f
+      ]
     end
   end
 

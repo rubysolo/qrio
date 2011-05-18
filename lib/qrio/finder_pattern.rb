@@ -16,11 +16,11 @@ class Qrio::FinderPattern
   # any horizontal or vertical slice should have pixels with ratio 1,1,3,1,1
   # we allow some slop around those values
   RATIO = [
-    0.70..1.30,
-    0.70..1.30,
+    0.56..1.44,
+    0.56..1.44,
     2.10..3.90,
-    0.70..1.30,
-    0.70..1.30
+    0.56..1.44,
+    0.56..1.44
   ]
   DEBUG_MODE = true
 
@@ -28,6 +28,8 @@ class Qrio::FinderPattern
     # given a raw bitmap, extract finder patterns
     def extract(bitmap)
       candidates = find_candidates(bitmap)
+
+      drawn = false
 
       debug_mode do
         @gc.stroke 'red'
@@ -64,14 +66,19 @@ class Qrio::FinderPattern
 
           debug_mode do
             @gc.draw bitmap
-            finder_pattern = bitmap.crop(bounds.left_edge, bounds.top_edge, bounds.width, bounds.height)
-            finder_pattern.write 'debug.png'
+            drawn = true
+            bitmap = bitmap.crop(bounds.left_edge, bounds.top_edge, bounds.width, bounds.height)
           end
         else
           puts "no shared corner!"
         end
 
         # TODO : rotate, transform
+      end
+
+      debug_mode do
+        @gc.draw bitmap unless drawn
+        bitmap.write 'debug.png'
       end
 
 

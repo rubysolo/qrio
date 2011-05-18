@@ -24,6 +24,10 @@ class TestQrioSlice < Test::Unit::TestCase
     slice1 = @s.new(0, 2, 8, 2)
     assert slice1.adjacent?(@s.new(0, 3, 8, 3))
     assert ! slice1.adjacent?(@s.new(5, 3, 13, 3))
+
+    slice1 = @s.new(3, 26, 82, 39)
+    slice2 = @s.new(3, 40, 81, 58)
+    assert slice1.adjacent?(slice2)
   end
 
   def test_slice_sorting
@@ -66,6 +70,7 @@ class TestQrioSlice < Test::Unit::TestCase
     assert_equal 4, slice3.bottom_edge
 
     slice4 = @s.new(0, 6, 8, 6)
+    assert slice3.within_offset_range?(slice4), slice3.offset_ranges(slice4)
     assert slice3.adjacent?(slice4)
     assert slice4.adjacent?(slice3)
 
