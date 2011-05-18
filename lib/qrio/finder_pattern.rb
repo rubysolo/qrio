@@ -28,6 +28,24 @@ class Qrio::FinderPattern
     # given a raw bitmap, extract finder patterns
     def extract(bitmap)
       candidates = find_candidates(bitmap)
+
+      if candidates.length >= 3
+        # force common orientation for sorting to work correctly
+        candidates.each{|c| c.orientation = :vertical }
+        candidates = candidates.sort
+
+        candidates.each do |c|
+          c.add_neighbors candidates
+        end
+
+        shared_corner = candidates.select do |c|
+          c.neighbors.select{|n| n.right_angle? }.count > 1
+        end
+
+        # TODO : extract, rotate, transform
+      end
+
+      candidates
     end
 
     def find_candidates(bitmap)

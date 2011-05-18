@@ -5,13 +5,14 @@ class Qrio::Slice
   MAX_EDGE_DIFF         = 1
   MAX_OFFSET_DIFF       = 2
 
-  attr_accessor :x1, :y1, :x2, :y2, :orientation
+  attr_accessor :x1, :y1, :x2, :y2, :orientation, :neighbors
 
   def initialize(x1, y1, x2, y2)
     @x1 = x1
     @y1 = y1
     @x2 = x2
     @y2 = y2
+    @neighbors = []
 
     @orientation = case
     when width > height
@@ -151,5 +152,12 @@ class Qrio::Slice
     right  = [right_edge,  other_slice.right_edge].max
 
     Qrio::Slice.new(left, top, right, bottom)
+  end
+
+  # given a list of other slices, calculate the angle and distance to each
+  def add_neighbors(slices)
+    slices.each do |s|
+      @neighbors << Qrio::Neighbor.new(self, s) unless center == s.center
+    end
   end
 end
