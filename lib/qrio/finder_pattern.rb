@@ -67,7 +67,7 @@ class Qrio::FinderPattern
           debug_mode do
             @gc.draw bitmap
             drawn = true
-            bitmap = bitmap.crop(bounds.left_edge, bounds.top_edge, bounds.width, bounds.height)
+            bitmap = bitmap.crop(*bounds.point_dims)
           end
         else
           puts "no shared corner!"

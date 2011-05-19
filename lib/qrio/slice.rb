@@ -25,7 +25,15 @@ class Qrio::Slice
   end
 
   def to_s
-    "#{ orientation } : (#{ (horizontal? ? left : top) * ',' }) -> (#{ (horizontal? ? right : bottom) * ','}) [#{ width }x#{ height }]"
+    "#{ orientation } : #{ line_label } #{ dimension_label }"
+  end
+
+  def line_label
+    "(#{ origin * ',' }) -> (#{ terminus * ',' })"
+  end
+
+  def dimension_label
+    "[#{ width }x#{ height }]"
   end
 
   def draw_debug(gc)
@@ -41,6 +49,10 @@ class Qrio::Slice
 
   def <=>(other)
     to_a(horizontal?) <=> other.to_a(horizontal?)
+  end
+
+  def point_dims
+    [left_edge, top_edge, width, height]
   end
 
   def horizontal?; orientation == :horizontal; end
@@ -69,6 +81,14 @@ class Qrio::Slice
 
   def short_side
     horizontal? ? height : width
+  end
+
+  def origin
+    horizontal? ? left : top
+  end
+
+  def terminus
+    horizontal? ? right : bottom
   end
 
   def ratio
