@@ -140,7 +140,12 @@ class TestQrioFinderPattern < Test::Unit::TestCase
   end
 
   def assert_matches_ratio(widths)
-    assert @fp.matches_finder_pattern?(widths), "expected #{ widths.join('|')} (#{ @fp.normalized_ratio(widths).map{|w| '%.2f' % w }.join('|') }) to match FP ratio"
+    width_label = widths.join('|')
+    ratio_label = @fp.normalized_ratio(widths).map{|w| '%.2f' % w }.join('|')
+    fp          = "#{ width_label } (#{ ratio_label })"
+
+    matches     = @fp.matches_finder_pattern?(widths)
+    assert matches, "expected #{ fp } to match ratio"
   end
 
   def fixture_img_path(filename)
