@@ -112,15 +112,35 @@ class Qrio::Slice
     return false if other_slice.orientation == orientation
 
     if horizontal?
-      left_edge <= other_slice.left_edge && right_edge >= other_slice.right_edge &&
-      top_edge  >= other_slice.top_edge && bottom_edge <= other_slice.bottom_edge &&
-      ((height - other_slice.width).abs / height.to_f) < MAX_SLICE_WIDTH_DIFF &&
-      ((width - other_slice.height).abs / width.to_f) < MAX_SLICE_LENGTH_DIFF
+      left_edge   <= other_slice.left_edge   &&
+      right_edge  >= other_slice.right_edge  &&
+      top_edge    >= other_slice.top_edge    &&
+      bottom_edge <= other_slice.bottom_edge &&
+      width_diff(other_slice)  < MAX_SLICE_WIDTH_DIFF &&
+      length_diff(other_slice) < MAX_SLICE_LENGTH_DIFF
     else
-      left_edge >= other_slice.left_edge && right_edge <= other_slice.right_edge &&
-      top_edge  <= other_slice.top_edge && bottom_edge >= other_slice.bottom_edge
-      ((width - other_slice.height).abs / width.to_f) < MAX_SLICE_WIDTH_DIFF &&
-      ((height - other_slice.width).abs / height.to_f) < MAX_SLICE_LENGTH_DIFF
+      left_edge   >= other_slice.left_edge   &&
+      right_edge  <= other_slice.right_edge  &&
+      top_edge    <= other_slice.top_edge    &&
+      bottom_edge >= other_slice.bottom_edge &&
+      width_diff(other_slice)  < MAX_SLICE_WIDTH_DIFF &&
+      length_diff(other_slice) < MAX_SLICE_LENGTH_DIFF
+    end
+  end
+
+  def width_diff(other_slice)
+    if horizontal?
+      (height - other_slice.width).abs / height.to_f
+    else
+      (width - other_slice.height).abs / width.to_f
+    end
+  end
+
+  def length_diff(other_slice)
+    if horizontal?
+      (width - other_slice.height).abs / width.to_f
+    else
+      (height - other_slice.width).abs / height.to_f
     end
   end
 
@@ -128,30 +148,47 @@ class Qrio::Slice
   # then we're adjacent
   def adjacent?(other_slice)
     if horizontal?
-      left_edges_match?(other_slice) &&
+      left_edges_match?(other_slice)  &&
       right_edges_match?(other_slice) &&
       within_offset_range?(other_slice)
     else
-      top_edges_match?(other_slice) &&
+      top_edges_match?(other_slice)    &&
       bottom_edges_match?(other_slice) &&
       within_offset_range?(other_slice)
     end
   end
 
+  def edge(which)
+    case which
+    when :left
+      left.first
+    when :right
+      right.first
+    when :top
+      top.last
+    when :bottom
+      bottom.last
+    end
+  end
+
+  def edge_diff(other_slice, which)
+    (edge(which) - other_slice.edge(which)).abs / long_side.to_f
+  end
+
   def left_edges_match?(other_slice)
-    (other_slice.left_edge - left_edge).abs / long_side.to_f <= MAX_EDGE_DIFF
+    edge_diff(other_slice, :left) <= MAX_EDGE_DIFF
   end
 
   def right_edges_match?(other_slice)
-    (other_slice.right_edge - right_edge).abs / long_side.to_f <= MAX_EDGE_DIFF
+    edge_diff(other_slice, :right) <= MAX_EDGE_DIFF
   end
 
   def top_edges_match?(other_slice)
-    (other_slice.top_edge - top_edge).abs / long_side.to_f <= MAX_EDGE_DIFF
+    edge_diff(other_slice, :top) <= MAX_EDGE_DIFF
   end
 
   def bottom_edges_match?(other_slice)
-    (other_slice.bottom_edge - bottom_edge).abs / long_side.to_f <= MAX_EDGE_DIFF
+    edge_diff(other_slice, :bottom) <= MAX_EDGE_DIFF
   end
 
   def within_offset_range?(other_slice)
