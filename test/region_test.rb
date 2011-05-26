@@ -55,4 +55,11 @@ class TestRegion < Test::Unit::TestCase
     assert_equal 6, slice4.bottom
   end
   
+  def test_equality_detection
+    slice1 = Qrio::Region.new(0, 2, 8, 2)
+    slice2 = Qrio::Region.new(0, 2, 8, 2)
+
+    assert_equal slice1, slice2
+    assert slice1.eql?(slice2)
+  end
 end

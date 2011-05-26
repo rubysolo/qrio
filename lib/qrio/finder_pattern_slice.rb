@@ -22,7 +22,7 @@ module Qrio
     end
 
     def to_s
-      "#{ self.class.to_s.gsub(/^.*::/,'')[0,1] }#{ offset }(#{ origin }->#{ terminus })"
+      "#{ self.class.to_s.gsub(/^.*::/,'')[0,1] }[#{ to_coordinates.join(',') }]"
     end
 
     def aspect_ratio

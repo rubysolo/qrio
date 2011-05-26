@@ -51,43 +51,45 @@ class TestQr < Test::Unit::TestCase
     assert_equal [4, 2, 3], @qr.rle([true, true, true, true, false, false, true, true, true])
   end
 
-  def test_slice_detection
-    @qr.load_image(fixture_img_path("finder_pattern1.png"))
-    @qr.scan(:horizontal)
-    @qr.scan(:vertical)
-    @qr.filter_candidates
+  def test_finder_pattern_detection
+    assert_contains_finder_pattern(
+      "finder_pattern1.png",
+      [10, 27, 52, 19],
+      [26, 10, 18, 52]
+    )
 
-    assert_equal 1, @qr.matches[:horizontal].length
-    hmatch = @qr.matches[:horizontal].first
-    assert_dimensions(hmatch, 10, 27, 52, 19)
+    assert_contains_finder_pattern(
+      "finder_pattern3.png",
+      [5, 21, 52, 16],
+      [21, 3, 17, 51]
+    )
 
-    assert_equal 1, @qr.matches[:vertical].length
-    vmatch = @qr.matches[:vertical].first
-    assert_dimensions(vmatch, 26, 10, 18, 52)
-
-    @qr.load_image(fixture_img_path("finder_pattern3.png"))
-    @qr.scan(:horizontal)
-    @qr.scan(:vertical)
-    @qr.filter_candidates
-
-    assert_equal 1, @qr.matches[:horizontal].length
-    hmatch = @qr.matches[:horizontal].first
-    assert_dimensions(hmatch, 5, 21, 53, 16)
-
-    assert_equal 1, @qr.matches[:vertical].length
-    vmatch = @qr.matches[:vertical].first
-    assert_dimensions(vmatch, 22, 3, 17, 52)
-
-    @qr.load_image(fixture_img_path("finder_pattern4.png"))
-    @qr.scan(:horizontal)
-    @qr.scan(:vertical)
-    @qr.filter_candidates
-
-    assert_equal 0, @qr.matches[:horizontal].length
-    assert_equal 0, @qr.matches[:vertical].length
+    assert_contains_finder_pattern(
+      "finder_pattern4.png",
+      [3, 26, 79, 34],
+      [26, 3, 31, 80]
+    )
   end
 
   private
+
+  def assert_contains_finder_pattern(img, h, v)
+    @qr.load_image fixture_img_path(img)
+    @qr.scan(:horizontal)
+    @qr.scan(:vertical)
+    @qr.filter_candidates
+
+    assert_equal 1, @qr.matches[:horizontal].length
+    hmatch = @qr.matches[:horizontal].first
+    assert_dimensions(hmatch, *h)
+
+    assert_equal 1, @qr.matches[:vertical].length
+    vmatch = @qr.matches[:vertical].first
+    assert_dimensions(vmatch, *v)
+
+    @qr.find_intersections
+    assert_equal 1, @qr.finder_patterns.length
+  end
 
   def assert_dimensions(region, left, top, width, height)
     assert_equal left,   region.left

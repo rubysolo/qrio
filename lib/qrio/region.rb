@@ -29,6 +29,22 @@ module Qrio
       [top_left, bottom_right].flatten
     end
 
+    def to_s
+      "R[#{ to_coordinates.join(',') }]"
+    end
+
+    def hash
+      to_s.hash
+    end
+
+    def eql?(other)
+      self == other
+    end
+
+    def ==(other)
+      to_s == other.to_s
+    end
+
     def width
       x2 - x1 + 1
     end

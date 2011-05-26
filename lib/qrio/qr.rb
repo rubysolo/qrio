@@ -3,16 +3,7 @@ module Qrio
     attr_reader :candidates, :matches, :finder_patterns, :qr_bounds
 
     def initialize
-      @candidates = {
-        :horizontal => [],
-        :vertical   => [],
-      }
-      @matches = {
-        :horizontal => [],
-        :vertical   => [],
-      }
-      @finder_patterns = []
-      @neighbors = []
+      initialize_storage
     end
 
     def self.load(filename)
@@ -31,6 +22,8 @@ module Qrio
     end
 
     def load_image(filename)
+      initialize_storage
+
       image_type = File.extname(filename).upcase.gsub('.', '')
       image_loader_class = Qrio::ImageLoader.const_get("#{ image_type }ImageLoader") rescue nil
       raise "Image type '#{ image_type }' not supported" if image_loader_class.nil?
@@ -146,7 +139,7 @@ module Qrio
 
     def filter_candidates
       [:horizontal, :vertical].each do |direction|
-        @candidates[direction].each do |candidate|
+        @candidates[direction].uniq.each do |candidate|
           @matches[direction] << candidate if candidate.matches_aspect_ratio?
         end
       end
@@ -180,7 +173,6 @@ module Qrio
           @finder_patterns << h.union(v) if h.intersects?(v)
         end
       end
-      puts " + found #{ @finder_patterns.length } finder patterns"
     end
 
     def set_qr_bounds
@@ -204,6 +196,21 @@ module Qrio
           @neighbors << Neighbor.new(source, destination)
         end
       end
+    end
+
+    private
+
+    def initialize_storage
+      @candidates = {
+        :horizontal => [],
+        :vertical   => [],
+      }
+      @matches = {
+        :horizontal => [],
+        :vertical   => [],
+      }
+      @finder_patterns = []
+      @neighbors = []
     end
   end
 
