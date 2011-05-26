@@ -1,7 +1,8 @@
 module Qrio
   # track angle and distance between two Finder Patterns
   class Neighbor
-    attr_accessor :source, :destination, :angle, :distance
+    attr_reader :source, :destination, :angle, :distance
+
     ANGLE     = Math::PI / 8
     ZERO      = 0..ANGLE
     NINETY    = (ANGLE * 3)..(ANGLE * 5)
@@ -11,6 +12,9 @@ module Qrio
       @source      = source
       @destination = destination
 
+			source.neighbors << self
+			destination.neighbors << self
+
       dx = destination.center.first - source.center.first
       # images are top down, geometry is bottom up.  invert.
       dy = source.center.last - destination.center.last
@@ -19,9 +23,13 @@ module Qrio
       @distance = Math.sqrt(dx ** 2 + dy ** 2)
     end
 
-    def coordinates
+    def to_coordinates
       [source.center, destination.center].flatten
     end
+
+		def to_s
+			"N#{ to_coordinates * ',' }"
+		end
 
     def right_angle?
       ZERO.include?(angle.abs)      ||
@@ -30,3 +38,4 @@ module Qrio
     end
   end
 end
+

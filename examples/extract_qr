@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require_relative '../lib/qrio'
+$stdout.sync = true
+
+filename = ARGV.shift || nil
+if filename.nil?
+  puts "Usage #{ $0 } filename"
+  exit 1
+end
+
+qr = Qrio::Qr.load(filename)
+
+qr.save_image(
+  'debug.png',
+  :annotate => [:matches, :finder_patterns, :angles]
+)
