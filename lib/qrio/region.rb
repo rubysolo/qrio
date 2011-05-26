@@ -29,6 +29,10 @@ module Qrio
       [top_left, bottom_right].flatten
     end
 
+    def to_point_size
+      [top_left, width, height].flatten
+    end
+
     def to_s
       "R[#{ to_coordinates.join(',') }]"
     end

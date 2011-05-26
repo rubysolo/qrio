@@ -32,14 +32,10 @@ module Qrio
     end
 
     def save_image(filename, options={})
-      bounds_object = options[:crop] ? @qr_bounds : @matrix
-      png = ChunkyPNG::Image.new(bounds_object.width, bounds_object.height, ChunkyPNG::Color::WHITE)
+      png = ChunkyPNG::Image.new(@matrix.width, @matrix.height, ChunkyPNG::Color::WHITE)
 
-      start_x, start_y = 0, 0
-      start_x, start_y = @qr_bounds.left, @qr_bounds.top if options[:crop]
-
-      (start_x..(bounds_object.width - 1)).to_a.each do |x|
-        (start_y..(bounds_object.height - 1)).to_a.each do |y|
+      (0..(@matrix.width - 1)).to_a.each do |x|
+        (0..(@matrix.height - 1)).to_a.each do |y|
           png[x, y] = ChunkyPNG::Color::BLACK if @matrix[x, y]
         end
       end
@@ -76,6 +72,7 @@ module Qrio
         end
       end
 
+      png = png.crop(*@qr_bounds.to_point_size) if options[:crop]
       png.save(filename, :fast_rgba)
     end
 

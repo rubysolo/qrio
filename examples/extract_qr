@@ -12,5 +12,6 @@ qr = Qrio::Qr.load(filename)
 
 qr.save_image(
   'debug.png',
+  :crop => true,
   :annotate => [:matches, :finder_patterns, :angles]
 )
