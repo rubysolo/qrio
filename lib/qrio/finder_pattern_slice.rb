@@ -78,7 +78,7 @@ module Qrio
       (other.origin..other.terminus).include?(offset) &&
       (origin..terminus).include?(other.offset) &&
       length_matches?(other) &&
-      width_matches?(other)
+      breadth_matches?(other)
     end
 
     def adjacent?(other)
@@ -121,12 +121,12 @@ module Qrio
       length_diff(other) <= LENGTH_TOLERANCE
     end
 
-    def width_diff(other)
-      (width - other.width).abs / length.to_f
+    def breadth_diff(other)
+      (breadth - other.breadth).abs / breadth.to_f
     end
 
-    def width_matches?(other)
-      width_diff(other) <= WIDTH_TOLERANCE
+    def breadth_matches?(other)
+      breadth_diff(other) <= WIDTH_TOLERANCE
     end
   end
 end

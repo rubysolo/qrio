@@ -36,7 +36,7 @@ class TestFinderPatternSlice < Test::Unit::TestCase
    slice2 = slice2.union Qrio::VerticalMatch.build(44, 16, 62)
 
    assert slice1.length_matches?(slice2), "length diff: #{ slice1.length_diff(slice2) }"
-   assert slice1.width_matches?(slice2), "width diff: #{ slice1.width_diff(slice2) }"
+   assert slice1.breadth_matches?(slice2), "breadth diff: #{ slice1.breadth_diff(slice2) }"
    assert slice1.intersects? slice2
 
    slice1 = Qrio::HorizontalMatch.build(21, 5, 57)
