@@ -46,46 +46,34 @@ module Qrio
 
       if options[:annotate].include?(:candidates)
         @candidates[:horizontal].each do |hmatch|
-          puts hmatch.to_s
           png.rect(*hmatch.to_coordinates, color(:green))
         end
-        puts
 
         @candidates[:vertical].each do |vmatch|
-          puts vmatch.to_s
           png.rect(*vmatch.to_coordinates, color(:magenta))
         end
-        puts
       end
 
       if options[:annotate].include?(:matches)
         @matches[:horizontal].each do |hmatch|
-          puts hmatch.to_s
           png.rect(*hmatch.to_coordinates, color(:green))
         end
-        puts
 
         @matches[:vertical].each do |vmatch|
-          puts vmatch.to_s
           png.rect(*vmatch.to_coordinates, color(:magenta))
         end
-        puts
       end
 
       if options[:annotate].include?(:finder_patterns)
         @finder_patterns.each do |finder_pattern|
-          puts finder_pattern.to_s
           png.rect(*finder_pattern.to_coordinates, color(:red))
         end
-        puts
       end
 
       if options[:annotate].include?(:angles)
         @neighbors[0,100].each do |neighbor|
-          puts neighbor.to_s
           png.line_xiaolin_wu(*neighbor.to_coordinates, color(:cyan))
         end
-        puts
       end
 
       png.save(filename, :fast_rgba)
