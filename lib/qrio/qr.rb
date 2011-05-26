@@ -155,21 +155,21 @@ module Qrio
     # transform a vector of bits in to a run-length encoded vector of widths
     # example:  [1, 1, 1, 1, 0, 0, 1, 1, 1] => [4, 2, 3]
     def rle(vector)
-			pattern = []
-			length = 1
-			last = vector.shift
+      pattern = []
+      length = 1
+      last = vector.shift
 
-			vector.each do |current|
-				if current === last
-					length += 1
-				else
-					pattern << length
-					length = 1
-					last = current
-				end
-			end
+      vector.each do |current|
+        if current === last
+          length += 1
+        else
+          pattern << length
+          length = 1
+          last = current
+        end
+      end
 
-			pattern << length
+      pattern << length
     end
 
     # find intersections of horizontal and vertical slices, these

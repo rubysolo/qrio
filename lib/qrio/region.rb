@@ -37,9 +37,9 @@ module Qrio
       y2 - y1 + 1
     end
 
-		def center
-			[left + width / 2, top + height / 2]
-		end
+    def center
+      [left + width / 2, top + height / 2]
+    end
 
     def horizontal?; orientation == :horizontal; end
     def vertical?;   orientation == :vertical;   end

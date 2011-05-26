@@ -12,8 +12,8 @@ module Qrio
       @source      = source
       @destination = destination
 
-			source.neighbors << self
-			destination.neighbors << self
+      source.neighbors << self
+      destination.neighbors << self
 
       dx = destination.center.first - source.center.first
       # images are top down, geometry is bottom up.  invert.
@@ -27,9 +27,9 @@ module Qrio
       [source.center, destination.center].flatten
     end
 
-		def to_s
-			"N#{ to_coordinates * ',' }"
-		end
+    def to_s
+      "N#{ to_coordinates * ',' }"
+    end
 
     def right_angle?
       ZERO.include?(angle.abs)      ||

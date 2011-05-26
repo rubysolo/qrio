@@ -13,17 +13,17 @@ module Qrio
     LENGTH_TOLERANCE = 0.35 # allowed length difference bewteen 2 intersecting slices
     WIDTH_TOLERANCE  = 0.15 # allowed width difference bewteen 2 intersecting slices
 
-		attr_accessor :neighbors
+    attr_accessor :neighbors
     attr_reader :offset, :origin, :terminus
 
-		def initialize(*args)
-			@neighbors = []
-			super
-		end
+    def initialize(*args)
+      @neighbors = []
+      super
+    end
 
-		def to_s
-			"#{ self.class.to_s.gsub(/^.*::/,'')[0,1] }#{ offset }(#{ origin }->#{ terminus })"
-		end
+    def to_s
+      "#{ self.class.to_s.gsub(/^.*::/,'')[0,1] }#{ offset }(#{ origin }->#{ terminus })"
+    end
 
     def aspect_ratio
       breadth / length.to_f
