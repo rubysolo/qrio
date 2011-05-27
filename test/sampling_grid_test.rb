@@ -64,6 +64,7 @@ class TestSamplingGrid < Test::Unit::TestCase
     assert_equal 0, grid.orientation
     assert_equal 3, grid.provisional_version
     assert_equal '7.38', ('%.2f' % grid.block_width)
+    assert_equal '7.29', ('%.2f' % grid.block_height)
   end
 
 
