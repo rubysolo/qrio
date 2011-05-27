@@ -42,5 +42,13 @@ module Qrio
         columns
       end
     end
+
+    def rotate
+      new_bits = []
+      columns.each do |column|
+        new_bits += column.reverse
+      end
+      self.class.new(new_bits, @height, @width)
+    end
   end
 end

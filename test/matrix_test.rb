@@ -17,4 +17,13 @@ class TestMatrix < Test::Unit::TestCase
     assert_equal 1, matrix[1, 0]
     assert_equal 0, matrix[1, 1]
   end
+
+  def test_rotation
+    matrix = Qrio::Matrix.new([1, 0, 1, 0, 0, 0, 0, 1, 0], 3, 3)
+    rotated = matrix.rotate
+
+    assert_equal [0, 0, 1], rotated.rows[0]
+    assert_equal [1, 0, 0], rotated.rows[1]
+    assert_equal [0, 0, 1], rotated.rows[2]
+  end
 end
