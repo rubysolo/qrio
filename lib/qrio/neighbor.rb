@@ -27,7 +27,7 @@ module Qrio
     end
 
     def to_s
-      "N#{ to_coordinates * ',' }"
+      "N[#{ to_coordinates * ',' }]"
     end
 
     def right_angle?
