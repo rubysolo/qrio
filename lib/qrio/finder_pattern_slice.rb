@@ -7,11 +7,11 @@ module Qrio
     ONE   = 0.5..1.5
     THREE = 2.1..3.9 # not to spec, but required for some "in-the-wild" QR
 
-    ENDPOINT_TOLERANCE = 0.05 # drift of origin and terminus between adjacent slices
+    ENDPOINT_TOLERANCE = 0.05 # origin/terminus delta between adjacent slices
     OFFSET_TOLERANCE   = 0.25 # how many non-matching slices can be skipped?
 
-    LENGTH_TOLERANCE = 0.35 # allowed length difference bewteen 2 intersecting slices
-    WIDTH_TOLERANCE  = 0.15 # allowed width difference bewteen 2 intersecting slices
+    LENGTH_TOLERANCE = 0.35 # allowed length delta bewteen 2 intersecting slices
+    WIDTH_TOLERANCE  = 0.15 # allowed width delta bewteen 2 intersecting slices
 
     attr_accessor :neighbors
     attr_reader :offset, :origin, :terminus
@@ -22,7 +22,11 @@ module Qrio
     end
 
     def to_s
-      "#{ self.class.to_s.gsub(/^.*::/,'')[0,1] }[#{ to_coordinates.join(',') }]"
+      "#{ class_name_prefix }[#{ to_coordinates.join(',') }]"
+    end
+
+    def class_name_prefix
+      self.class.to_s.gsub(/^.*::/, '')[0,1]
     end
 
     def aspect_ratio

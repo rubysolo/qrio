@@ -47,27 +47,30 @@ class TestQr < Test::Unit::TestCase
   end
 
   def test_rle
-    assert_equal [4, 2, 3], @qr.rle([1, 1, 1, 1, 0, 0, 1, 1, 1])
-    assert_equal [4, 2, 3], @qr.rle([true, true, true, true, false, false, true, true, true])
+    input = [1, 1, 1, 1, 0, 0, 1, 1, 1]
+    assert_equal [4, 2, 3], @qr.rle(input)
+
+    input.map!{|i| i == 1 }
+    assert_equal [4, 2, 3], @qr.rle(input), "RLE should work with booleans"
   end
 
   def test_finder_pattern_detection
     assert_contains_finder_pattern(
       "finder_pattern1.png",
       [10, 27, 52, 19],
-      [26, 10, 18, 52]
+      [27, 10, 18, 52]
     )
 
     assert_contains_finder_pattern(
       "finder_pattern3.png",
       [5, 21, 52, 16],
-      [21, 3, 17, 51]
+      [22, 3, 17, 51]
     )
 
     assert_contains_finder_pattern(
       "finder_pattern4.png",
       [3, 26, 79, 34],
-      [26, 3, 31, 80]
+      [27, 3, 31, 80]
     )
   end
 
@@ -92,10 +95,10 @@ class TestQr < Test::Unit::TestCase
   end
 
   def assert_dimensions(region, left, top, width, height)
-    assert_equal left,   region.left
-    assert_equal top,    region.top
-    assert_equal width,  region.width
-    assert_equal height, region.height
+    assert_equal left,   region.left,   "L #{ region } != #{ left }"
+    assert_equal top,    region.top,    "T #{ region } != #{ top }"
+    assert_equal width,  region.width,  "W #{ region } != #{ width }"
+    assert_equal height, region.height, "H #{ region } != #{ height }"
   end
 
   def fixture_img_path(filename)

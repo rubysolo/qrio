@@ -25,14 +25,22 @@ module Qrio
       initialize_storage
 
       image_type = File.extname(filename).upcase.gsub('.', '')
-      image_loader_class = Qrio::ImageLoader.const_get("#{ image_type }ImageLoader") rescue nil
-      raise "Image type '#{ image_type }' not supported" if image_loader_class.nil?
+      image_loader_class = "#{ image_type }ImageLoader"
+      image_loader_class = ImageLoader.const_get(image_loader_class) rescue nil
+
+      if image_loader_class.nil?
+        raise "Image type '#{ image_type }' not supported"
+      end
 
       @matrix = image_loader_class.load(filename)
     end
 
     def save_image(filename, options={})
-      png = ChunkyPNG::Image.new(@matrix.width, @matrix.height, ChunkyPNG::Color::WHITE)
+      png = ChunkyPNG::Image.new(
+        @matrix.width,
+        @matrix.height,
+        ChunkyPNG::Color::WHITE
+      )
 
       (0..(@matrix.width - 1)).to_a.each do |x|
         (0..(@matrix.height - 1)).to_a.each do |y|
@@ -99,7 +107,7 @@ module Qrio
           while next_length = pattern.shift
             segment << next_length
 
-            if candidate = FinderPatternSlice.build_matching(offset, origin, segment, direction)
+            if candidate = find_candidate(offset, origin, segment, direction)
               add_candidate(candidate, direction)
             end
 
@@ -107,6 +115,10 @@ module Qrio
           end
         end
       end
+    end
+
+    def find_candidate(offset, origin, segment, direction)
+      FinderPatternSlice.build_matching(offset, origin, segment, direction)
     end
 
     def add_candidate(new_candidate, direction)
@@ -133,11 +145,13 @@ module Qrio
     # transform a vector of bits in to a run-length encoded vector of widths
     # example:  [1, 1, 1, 1, 0, 0, 1, 1, 1] => [4, 2, 3]
     def rle(vector)
+      v = vector.dup
+
       pattern = []
       length = 1
-      last = vector.shift
+      last = v.shift
 
-      vector.each do |current|
+      v.each do |current|
         if current === last
           length += 1
         else
@@ -164,14 +178,17 @@ module Qrio
       if @finder_patterns.length >= 3
         build_finder_pattern_neighbors
 
-        shared_corners = @finder_patterns.select{|fp| fp.neighbors.select(&:right_angle?).count > 1 }
+        shared_corners = @finder_patterns.select do |fp|
+          fp.neighbors.select(&:right_angle?).count > 1
+        end
+
         # TODO : handle multiple possible matches
         if @qr_bounds = shared_corners.first
           @qr_bounds.neighbors.select(&:right_angle?).each do |n|
             @qr_bounds = @qr_bounds.union(n.destination)
           end
         end
-      end    
+      end
     end
 
     def build_finder_pattern_neighbors

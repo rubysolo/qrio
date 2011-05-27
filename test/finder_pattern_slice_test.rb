@@ -35,8 +35,8 @@ class TestFinderPatternSlice < Test::Unit::TestCase
    slice2 = Qrio::VerticalMatch.build(27, 16, 62)
    slice2 = slice2.union Qrio::VerticalMatch.build(44, 16, 62)
 
-   assert slice1.length_matches?(slice2), "length diff: #{ slice1.length_diff(slice2) }"
-   assert slice1.breadth_matches?(slice2), "breadth diff: #{ slice1.breadth_diff(slice2) }"
+   assert slice1.length_matches?(slice2)
+   assert slice1.breadth_matches?(slice2)
    assert slice1.intersects? slice2
 
    slice1 = Qrio::HorizontalMatch.build(21, 5, 57)
@@ -74,7 +74,12 @@ class TestFinderPatternSlice < Test::Unit::TestCase
 =end
 
   def test_slice_builder
-    slice = Qrio::FinderPatternSlice.build_matching(10, 5, [1, 1, 3, 1, 1], :horizontal)
+    slice = Qrio::FinderPatternSlice.build_matching(
+      10, 5,
+      [1, 1, 3, 1, 1],
+      :horizontal
+    )
+
     assert slice.is_a?(Qrio::HorizontalMatch)
     assert_equal 10, slice.offset
     assert_equal 5, slice.origin
@@ -86,7 +91,12 @@ class TestFinderPatternSlice < Test::Unit::TestCase
     assert_equal 1, slice.height
     assert_equal 7, slice.width
 
-    slice = Qrio::FinderPatternSlice.build_matching(23, 15, [1, 1, 3, 1, 1], :vertical)
+    slice = Qrio::FinderPatternSlice.build_matching(
+      23, 15,
+      [1, 1, 3, 1, 1],
+      :vertical
+    )
+
     assert slice.is_a?(Qrio::VerticalMatch)
     assert_equal 23, slice.offset
     assert_equal 15, slice.origin
