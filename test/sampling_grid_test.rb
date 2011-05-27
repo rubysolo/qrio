@@ -50,9 +50,22 @@ class TestSamplingGrid < Test::Unit::TestCase
     assert_equal "F[0,14,6,20]", grid.origin_corner.to_s
     assert_equal 3, grid.orientation
     assert_equal 1, grid.provisional_version
-
-    #assert_equal '7.21', ('%.2f' % fp.pixel_width)
   end
+
+  def test_slight_rotation
+    finder_patterns = build_finder_patterns([
+      [105,217,155,266],
+      [290,216,341,266],
+      [100,401,151,452]
+    ])
+
+    grid = Qrio::SamplingGrid.new(@matrix, finder_patterns)
+    assert_equal "F[105,217,155,266]", grid.origin_corner.to_s
+    assert_equal 0, grid.orientation
+    assert_equal 3, grid.provisional_version
+    assert_equal '7.38', ('%.2f' % grid.block_width)
+  end
+
 
   private
 
@@ -62,10 +75,3 @@ class TestSamplingGrid < Test::Unit::TestCase
     end
   end
 end
-
-__END__
-
-      [105,217,155,266],
-      [290,216,341,266],
-      [100,401,151,452]
-
