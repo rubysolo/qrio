@@ -1,5 +1,5 @@
 module Qrio
-  class BoolMatrix
+  class Matrix
     attr_reader :width, :height
 
     def initialize(bits, width, height)

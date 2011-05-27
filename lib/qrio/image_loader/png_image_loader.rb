@@ -10,7 +10,7 @@ module Qrio
           level <= 126
         end
 
-        BoolMatrix.new(bits, image.width, image.height)
+        Matrix.new(bits, image.width, image.height)
       end
     end
   end

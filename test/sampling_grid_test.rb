@@ -3,7 +3,7 @@ require 'test/unit'
 
 class TestSamplingGrid < Test::Unit::TestCase
   def setup
-    @matrix = Qrio::BoolMatrix.new(Array.new(441, false), 21, 21)
+    @matrix = Qrio::Matrix.new(Array.new(441, false), 21, 21)
   end
 
   def test_orientation_detection
