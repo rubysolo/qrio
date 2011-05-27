@@ -1,6 +1,7 @@
 module Qrio
   class SamplingGrid
-    attr_reader :origin_corner, :orientation, :bounds, :angles
+    attr_reader :origin_corner, :orientation, :bounds, :angles,
+                :block_width, :block_height, :provisional_version
 
     def initialize(matrix, finder_patterns)
       @matrix          = matrix
@@ -44,6 +45,10 @@ module Qrio
       threshold = dc / 2.0
 
       other_corners = other_corners.map(&:destination)
+
+      set_block_dimensions(@origin_corner, *other_corners)
+      @provisional_version = ((dc / @block_width).round - 10) / 4
+
       xs = other_corners.map{|fp| fp.center.first }
       ys = other_corners.map{|fp| fp.center.last }
 
@@ -64,6 +69,11 @@ module Qrio
           @angles << Neighbor.new(source, destination)
         end
       end
+    end
+
+    def set_block_dimensions(*finder_patterns)
+      @block_width  = finder_patterns.inject(0){|s,f| s + f.width } / 21.0
+      @block_height = finder_patterns.inject(0){|s,f| s + f.height } / 21.0
     end
   end
 end

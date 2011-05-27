@@ -8,44 +8,48 @@ class TestSamplingGrid < Test::Unit::TestCase
 
   def test_orientation_detection
     finder_patterns = build_finder_patterns([
-      [ 0, 0, 7, 7],
-      [14, 0,20, 7],
-      [ 0,14,14,20]
+      [ 0, 0, 6, 6],
+      [14, 0,20, 6],
+      [ 0,14, 6,20]
     ])
 
     grid = Qrio::SamplingGrid.new(@matrix, finder_patterns)
-    assert_equal "F[0,0,7,7]", grid.origin_corner.to_s
+    assert_equal "F[0,0,6,6]", grid.origin_corner.to_s
     assert_equal 0, grid.orientation
+    assert_equal 1, grid.provisional_version
 
     finder_patterns = build_finder_patterns([
-      [ 0, 0, 7, 7],
-      [14, 0,20, 7],
+      [ 0, 0, 6, 6],
+      [14, 0,20, 6],
       [14,14,20,20]
     ])
 
     grid = Qrio::SamplingGrid.new(@matrix, finder_patterns)
-    assert_equal "F[14,0,20,7]", grid.origin_corner.to_s
+    assert_equal "F[14,0,20,6]", grid.origin_corner.to_s
     assert_equal 1, grid.orientation
+    assert_equal 1, grid.provisional_version
 
     finder_patterns = build_finder_patterns([
-      [14, 0,20, 7],
+      [14, 0,20, 6],
       [14,14,20,20],
-      [ 0,14,14,20]
+      [ 0,14, 6,20]
     ])
 
     grid = Qrio::SamplingGrid.new(@matrix, finder_patterns)
     assert_equal "F[14,14,20,20]", grid.origin_corner.to_s
     assert_equal 2, grid.orientation
+    assert_equal 1, grid.provisional_version
 
     finder_patterns = build_finder_patterns([
       [14,14,20,20],
-      [ 0,14,14,20],
-      [ 0, 0, 7, 7],
+      [ 0,14, 6,20],
+      [ 0, 0, 6, 6],
     ])
 
     grid = Qrio::SamplingGrid.new(@matrix, finder_patterns)
-    assert_equal "F[0,14,14,20]", grid.origin_corner.to_s
+    assert_equal "F[0,14,6,20]", grid.origin_corner.to_s
     assert_equal 3, grid.orientation
+    assert_equal 1, grid.provisional_version
 
     #assert_equal '7.21', ('%.2f' % fp.pixel_width)
   end
