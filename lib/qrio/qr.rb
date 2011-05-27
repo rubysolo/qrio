@@ -75,8 +75,8 @@ module Qrio
       end
 
       if options[:annotate].include?(:angles)
-        @neighbors[0,100].each do |neighbor|
-          png.line_xiaolin_wu(*neighbor.to_coordinates, color(:cyan))
+        @sampling_grid.angles[0, 100].each do |angle|
+          png.line_xiaolin_wu(*angle.to_coordinates, color(:cyan))
         end
       end
 
@@ -176,27 +176,8 @@ module Qrio
 
     def set_qr_bounds
       if @finder_patterns.length >= 3
-        build_finder_pattern_neighbors
-
-        shared_corners = @finder_patterns.select do |fp|
-          fp.neighbors.select(&:right_angle?).count > 1
-        end
-
-        # TODO : handle multiple possible matches
-        if @qr_bounds = shared_corners.first
-          @qr_bounds.neighbors.select(&:right_angle?).each do |n|
-            @qr_bounds = @qr_bounds.union(n.destination)
-          end
-        end
-      end
-    end
-
-    def build_finder_pattern_neighbors
-      @finder_patterns.each do |source|
-        @finder_patterns.each do |destination|
-          next if source.center == destination.center
-          @neighbors << Neighbor.new(source, destination)
-        end
+        @sampling_grid = SamplingGrid.new(@matrix, @finder_patterns)
+        @qr_bounds = @sampling_grid.bounds
       end
     end
 

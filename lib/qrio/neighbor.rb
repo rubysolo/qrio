@@ -13,7 +13,6 @@ module Qrio
       @destination = destination
 
       source.neighbors << self
-      destination.neighbors << self
 
       dx = destination.center.first - source.center.first
       # images are top down, geometry is bottom up.  invert.
