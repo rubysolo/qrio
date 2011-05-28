@@ -4,15 +4,26 @@ module Qrio
   # detection / decoding algorithms
   module ImageDumper
     def save_image(filename, options={})
+      if matrix = @extracted_matrix
+        # extracted matrix is already cropped
+        options[:crop] = false
+      else
+        matrix = @input_matrix
+      end
+
+      save_to_image(matrix, filename, options)
+    end
+
+    def save_to_image(matrix, filename, options={})
       png = ChunkyPNG::Image.new(
-        @input_matrix.width,
-        @input_matrix.height,
+        matrix.width,
+        matrix.height,
         ChunkyPNG::Color::WHITE
       )
 
-      (0..(@input_matrix.width - 1)).to_a.each do |x|
-        (0..(@input_matrix.height - 1)).to_a.each do |y|
-          png[x, y] = ChunkyPNG::Color::BLACK if @input_matrix[x, y]
+      (0..(matrix.width - 1)).to_a.each do |x|
+        (0..(matrix.height - 1)).to_a.each do |y|
+          png[x, y] = ChunkyPNG::Color::BLACK if matrix[x, y]
         end
       end
 
