@@ -81,15 +81,28 @@ module Qrio
       @block_height = finder_patterns.inject(0){|s,f| s + f.height } / 21.0
     end
 
+    def normalize
+      translate(*@bounds.top_left)
+      if @orientation > 0
+        (4 - @orientation).times do
+          rotate
+        end
+      end
+      build_finder_pattern_neighbors
+    end
+
     def translate(x, y)
       @angles = []
       other_corners = non_origin_finder_patterns.map(&:destination)
 
       translated = [@origin_corner.translate(x, y)]
       translated += other_corners.map{|c| c.translate(x, y) }
-      @finder_patterns  = translated
 
-      build_finder_pattern_neighbors
+      @finder_patterns = translated
+    end
+
+    def rotate
+      @finder_patterns.map!{|f| f.rotate(@bounds.width, @bounds.height) }
     end
   end
 end

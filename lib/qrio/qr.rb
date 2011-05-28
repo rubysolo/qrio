@@ -152,7 +152,7 @@ module Qrio
         @translated_matches[:vertical] << m.translate(*@qr_bounds.top_left)
       end
 
-      @sampling_grid.translate(*@qr_bounds.top_left)
+      @sampling_grid.normalize
     end
 
     private
