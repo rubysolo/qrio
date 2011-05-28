@@ -32,19 +32,19 @@ module Qrio
         raise "Image type '#{ image_type }' not supported"
       end
 
-      @matrix = image_loader_class.load(filename)
+      @input_matrix = image_loader_class.load(filename)
     end
 
     def save_image(filename, options={})
       png = ChunkyPNG::Image.new(
-        @matrix.width,
-        @matrix.height,
+        @input_matrix.width,
+        @input_matrix.height,
         ChunkyPNG::Color::WHITE
       )
 
-      (0..(@matrix.width - 1)).to_a.each do |x|
-        (0..(@matrix.height - 1)).to_a.each do |y|
-          png[x, y] = ChunkyPNG::Color::BLACK if @matrix[x, y]
+      (0..(@input_matrix.width - 1)).to_a.each do |x|
+        (0..(@input_matrix.height - 1)).to_a.each do |y|
+          png[x, y] = ChunkyPNG::Color::BLACK if @input_matrix[x, y]
         end
       end
 
@@ -96,7 +96,7 @@ module Qrio
     end
 
     def scan(direction)
-      vectors = direction == :horizontal ? @matrix.rows : @matrix.columns
+      vectors = direction == :horizontal ? @input_matrix.rows : @input_matrix.columns
       vectors.each_with_index do |vector, offset|
         pattern = rle(vector)
 
@@ -176,7 +176,7 @@ module Qrio
 
     def set_qr_bounds
       if @finder_patterns.length >= 3
-        @sampling_grid = SamplingGrid.new(@matrix, @finder_patterns)
+        @sampling_grid = SamplingGrid.new(@input_matrix, @finder_patterns)
         @qr_bounds = @sampling_grid.bounds
       end
     end
