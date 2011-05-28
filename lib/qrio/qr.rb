@@ -126,17 +126,13 @@ module Qrio
 
     # extract the qr into a smaller matrix and rotate to standard orientation
     def build_normalized_qr
-      @extracted_matrix = @input_matrix.extract(*@qr_bounds.to_point_size)
-      translate_features
+      return false if @sampling_grid.nil?
 
-      if @sampling_grid.orientation > 0
-        # TODO : need to rotate detected features (eg finder patterns) as well...
-        rotations = 4 - @sampling_grid.orientation
-        rotations.times { @extracted_matrix = @extracted_matrix.rotate }
-      end
-    end
+      original_orientation = @sampling_grid.orientation
 
-    def translate_features
+      @sampling_grid.normalize
+      @extracted_matrix = @sampling_grid.matrix
+
       @translated_matches = {
         :horizontal => [],
         :vertical   => []
@@ -145,14 +141,24 @@ module Qrio
       @translated_neighbors = []
 
       @matches[:horizontal].each do |m|
-        @translated_matches[:horizontal] << m.translate(*@qr_bounds.top_left)
+        m = m.translate(*@qr_bounds.top_left)
+        if original_orientation > 0
+          (4 - original_orientation).times do
+            m = m.rotate(@qr_bounds.width, @qr_bounds.height)
+          end
+        end
+        @translated_matches[:horizontal] << m
       end
 
       @matches[:vertical].each do |m|
-        @translated_matches[:vertical] << m.translate(*@qr_bounds.top_left)
+        m = m.translate(*@qr_bounds.top_left)
+        if original_orientation > 0
+          (4 - original_orientation).times do
+            m = m.rotate(@qr_bounds.width, @qr_bounds.height)
+          end
+        end
+        @translated_matches[:vertical] << m
       end
-
-      @sampling_grid.normalize
     end
 
     private

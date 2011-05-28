@@ -2,7 +2,7 @@ module Qrio
   class SamplingGrid
     attr_reader :origin_corner, :orientation, :bounds, :angles,
                 :block_width, :block_height, :provisional_version,
-                :finder_patterns
+                :finder_patterns, :matrix
 
     def initialize(matrix, finder_patterns)
       @matrix          = matrix
@@ -82,6 +82,8 @@ module Qrio
     end
 
     def normalize
+      @matrix = @matrix.extract(*@bounds.to_point_size)
+
       translate(*@bounds.top_left)
       if @orientation > 0
         (4 - @orientation).times do
@@ -102,6 +104,7 @@ module Qrio
     end
 
     def rotate
+      @matrix = @matrix.rotate
       @finder_patterns.map!{|f| f.rotate(@bounds.width, @bounds.height) }
     end
   end
