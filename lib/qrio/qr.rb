@@ -17,6 +17,8 @@ module Qrio
       instance.find_intersections
       instance.set_qr_bounds
 
+      instance.build_normalized_qr
+
       # TODO : decode and set decoded flag
       instance
     end
@@ -181,6 +183,15 @@ module Qrio
       end
     end
 
+    # extract the qr into a smaller matrix and rotate to standard orientation
+    def build_normalized_qr
+      @extracted_matrix = @input_matrix.extract(*@qr_bounds.to_point_size)
+      if @sampling_grid.orientation > 0
+        rotations = 4 - @sampling_grid.orientation
+        rotations.times { @extracted_matrix = @extracted_matrix.rotate }
+      end
+    end
+
     private
 
     def initialize_storage
@@ -193,7 +204,6 @@ module Qrio
         :vertical   => [],
       }
       @finder_patterns = []
-      @neighbors = []
     end
   end
 
