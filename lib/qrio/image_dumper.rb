@@ -7,8 +7,18 @@ module Qrio
       if matrix = @extracted_matrix
         # extracted matrix is already cropped
         options[:crop] = false
+        @features = {
+          :candidates      => {},
+          :matches         => @translated_matches,
+          :finder_patterns => @sampling_grid.finder_patterns
+        }
       else
         matrix = @input_matrix
+        @features = {
+          :candidates      => @candidates,
+          :matches         => @matches,
+          :finder_patterns => @finder_patterns
+        }
       end
 
       save_to_image(matrix, filename, options)
@@ -28,27 +38,27 @@ module Qrio
       end
 
       if options[:annotate].include?(:candidates)
-        @candidates[:horizontal].each do |hmatch|
+        @features[:candidates][:horizontal].each do |hmatch|
           png.rect(*hmatch.to_coordinates, color(:green))
         end
 
-        @candidates[:vertical].each do |vmatch|
+        @features[:candidates][:vertical].each do |vmatch|
           png.rect(*vmatch.to_coordinates, color(:magenta))
         end
       end
 
       if options[:annotate].include?(:matches)
-        @matches[:horizontal].each do |hmatch|
+        @features[:matches][:horizontal].each do |hmatch|
           png.rect(*hmatch.to_coordinates, color(:green))
         end
 
-        @matches[:vertical].each do |vmatch|
+        @features[:matches][:vertical].each do |vmatch|
           png.rect(*vmatch.to_coordinates, color(:magenta))
         end
       end
 
       if options[:annotate].include?(:finder_patterns)
-        @finder_patterns.each do |finder_pattern|
+        @features[:finder_patterns].each do |finder_pattern|
           png.rect(*finder_pattern.to_coordinates, color(:red))
         end
       end

@@ -1,7 +1,8 @@
 module Qrio
   class SamplingGrid
     attr_reader :origin_corner, :orientation, :bounds, :angles,
-                :block_width, :block_height, :provisional_version
+                :block_width, :block_height, :provisional_version,
+                :finder_patterns
 
     def initialize(matrix, finder_patterns)
       @matrix          = matrix
@@ -39,7 +40,7 @@ module Qrio
     #   3)        - shared finder patterns in bottom left
     def detect_orientation
       # TODO : handle multiple possible matches
-      other_corners = @origin_corner.neighbors.select(&:right_angle?)[0,2]
+      other_corners = non_origin_finder_patterns
 
       dc = other_corners.map(&:distance).inject(0){|s,d| s + d } / 2.0
       threshold = dc / 2.0
@@ -62,6 +63,10 @@ module Qrio
       end
     end
 
+    def non_origin_finder_patterns
+      @origin_corner.neighbors.select(&:right_angle?)[0,2]
+    end
+
     def build_finder_pattern_neighbors
       @finder_patterns.each do |source|
         @finder_patterns.each do |destination|
@@ -74,6 +79,17 @@ module Qrio
     def set_block_dimensions(*finder_patterns)
       @block_width  = finder_patterns.inject(0){|s,f| s + f.width } / 21.0
       @block_height = finder_patterns.inject(0){|s,f| s + f.height } / 21.0
+    end
+
+    def translate(x, y)
+      @angles = []
+      other_corners = non_origin_finder_patterns.map(&:destination)
+
+      translated = [@origin_corner.translate(x, y)]
+      translated += other_corners.map{|c| c.translate(x, y) }
+      @finder_patterns  = translated
+
+      build_finder_pattern_neighbors
     end
   end
 end
