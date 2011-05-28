@@ -50,5 +50,13 @@ module Qrio
       end
       self.class.new(new_bits, @height, @width)
     end
+
+    def extract(x, y, width, height)
+      new_bits = []
+      height.times do |offset|
+        new_bits += rows[y + offset].slice(x, width)
+      end
+      self.class.new(new_bits, width, height)
+    end
   end
 end
