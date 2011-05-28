@@ -62,4 +62,10 @@ class TestRegion < Test::Unit::TestCase
     assert_equal slice1, slice2
     assert slice1.eql?(slice2)
   end
+
+  def test_translation
+    region = Qrio::Region.new(7, 7, 10, 10)
+    translated = region.translate(7, 7)
+    assert_equal "R[0,0,3,3]", translated.to_s
+  end
 end

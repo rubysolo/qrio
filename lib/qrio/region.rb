@@ -77,6 +77,15 @@ module Qrio
       )
     end
 
+    def translate(xoffset, yoffset)
+      self.class.new(
+        left   - xoffset,
+        top    - yoffset,
+        right  - xoffset,
+        bottom - yoffset
+      )
+    end
+
     private
 
     def set_orientation
