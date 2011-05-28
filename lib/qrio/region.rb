@@ -86,6 +86,17 @@ module Qrio
       )
     end
 
+    # return a new region that would be the result of rotating
+    # a matrix of width x height containing this region
+    def rotate(mw, mh)
+      self.class.new(
+        mh - bottom - 1,
+        left,
+        mh - top - 1,
+        right
+      )
+    end
+
     private
 
     def set_orientation

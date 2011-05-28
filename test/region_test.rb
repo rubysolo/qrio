@@ -68,4 +68,20 @@ class TestRegion < Test::Unit::TestCase
     translated = region.translate(7, 7)
     assert_equal "R[0,0,3,3]", translated.to_s
   end
+
+  def test_rotation
+    region = Qrio::Region.new(0,0,6,6)
+
+    rotated = region.rotate(21, 21)
+    assert_equal "R[14,0,20,6]", rotated.to_s
+
+    rotated = rotated.rotate(21, 21)
+    assert_equal "R[14,14,20,20]", rotated.to_s
+
+    rotated = rotated.rotate(21, 21)
+    assert_equal "R[0,14,6,20]", rotated.to_s
+
+    rotated = rotated.rotate(21, 21)
+    assert_equal "R[0,0,6,6]", rotated.to_s
+  end
 end
