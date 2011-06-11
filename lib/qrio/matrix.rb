@@ -8,8 +8,12 @@ module Qrio
       @height = height
     end
 
+    def to_s
+      "<Matrix width:#{ width }, height: #{ height }>"
+    end
+
     def [](x, y)
-      rows[y][x]
+      rows[y][x] rescue nil
     end
 
     def rows

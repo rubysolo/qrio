@@ -69,6 +69,16 @@ module Qrio
         end
       end
 
+      if options[:annotate].include?(:alignment_patterns)
+        png.rect(*@alignment_pattern.to_coordinates, color(:magenta))
+      end
+
+      if options[:annotate].include?(:extracted_pixels)
+        @sampling_grid.extracted_pixels do |x, y|
+          png.circle(x, y, 1, color(:cyan))
+        end
+      end
+
       png = png.crop(*@qr_bounds.to_point_size) if options[:crop]
       png.save(filename, :fast_rgba)
     end

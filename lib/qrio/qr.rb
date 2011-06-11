@@ -19,6 +19,9 @@ module Qrio
       instance.set_qr_bounds
 
       instance.build_normalized_qr
+      instance.find_alignment_pattern
+
+      instance.extract_format_information
 
       # TODO : decode and set decoded flag
       instance
@@ -133,6 +136,12 @@ module Qrio
       @sampling_grid.normalize
       @extracted_matrix = @sampling_grid.matrix
 
+      bits = []
+      @sampling_grid.extracted_pixels do |x, y|
+        bits << @extracted_matrix[x, y]
+      end
+      @qr = Matrix.new(bits, @sampling_grid.logical_width, @sampling_grid.logical_height)
+
       @translated_matches = {
         :horizontal => [],
         :vertical   => []
@@ -159,6 +168,51 @@ module Qrio
         end
         @translated_matches[:vertical] << m
       end
+    end
+
+    def find_alignment_pattern
+      test_x = @sampling_grid.top_right.center.first - (@sampling_grid.block_width * 3)
+      test_y = @sampling_grid.bottom_left.center.last - (@sampling_grid.block_height * 3)
+
+      test_x = (test_x - @sampling_grid.block_width  / 2.0).round
+      test_y = (test_y - @sampling_grid.block_height / 2.0).round
+
+      # TODO : this is where the AP *should* be, given no image skew.
+      # starting here, find center of nearest blob that "looks" like an AP.
+      # offset from predicted will be used in sampling grid to account for skew
+      @alignment_pattern = Qrio::Region.new(
+        test_x, test_y,
+        (test_x + @sampling_grid.block_width).round,
+        (test_y + @sampling_grid.block_height).round
+      )
+    end
+
+    FORMAT_MASK = 0b101_0100_0001_0010
+    def extract_format_information
+      bits = 0
+
+      0.upto(5) do |row_idx|
+        bits = bits << 1
+        bits += 1 if @qr[8, row_idx]
+      end
+
+      bits = bits << 1
+      bits += 1 if @qr[8, 7]
+      bits = bits << 1
+      bits += 1 if @qr[8, 8]
+      bits = bits << 1
+      bits += 1 if @qr[7, 8]
+
+      5.downto(0) do |col_idx|
+        bits = bits << 1
+        bits += 1 if @qr[col_idx, 8]
+      end
+
+      # puts (bits).to_s(2).rjust(15, '0')
+      # puts (FORMAT_MASK).to_s(2).rjust(15, '0')
+      # puts (bits ^ FORMAT_MASK).to_s(2).rjust(15, '0')
+      
+      # TODO check BCH error detection
     end
 
     private
