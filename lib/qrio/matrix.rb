@@ -16,6 +16,12 @@ module Qrio
       rows[y][x] rescue nil
     end
 
+    def []=(x, y, value)
+      raise "Matrix index out of bounds" if x >= width || y >= height
+      @bits[(width * y) + x] = value
+      @rows = @columns = nil
+    end
+
     def rows
       @rows ||= begin
         rows = []

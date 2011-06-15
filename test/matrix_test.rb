@@ -49,4 +49,18 @@ class TestMatrix < Test::Unit::TestCase
     assert_equal [1, 1, 0], extracted.rows[0]
     assert_equal [0, 1, 0], extracted.rows[1]
   end
+
+  def test_set_bit
+    bits   = Array.new(25, false)
+    matrix = Qrio::Matrix.new(bits, 5, 5)
+    refute matrix[4, 4]
+    refute matrix.rows.last.last
+    refute matrix.columns.last.last
+
+    matrix[4, 4] = true
+
+    assert matrix[4, 4]
+    assert matrix.rows.last.last
+    assert matrix.columns.last.last
+  end
 end
