@@ -6,6 +6,7 @@ require_relative 'qrio/horizontal_match'
 require_relative 'qrio/vertical_match'
 require_relative 'qrio/neighbor'
 require_relative 'qrio/matrix'
+require_relative 'qrio/qr_matrix'
 require_relative 'qrio/sampling_grid'
 
 require_relative 'qrio/image_dumper'

@@ -14,6 +14,11 @@ class TestQrMatrix < Test::Unit::TestCase
     @qr = Qrio::QrMatrix.new(bits, width, height)
   end
 
+  def test_format_detection
+    @qr[8, 1] = false
+    assert_equal 'M', @qr.error_correction_level
+  end
+
 
   def test_dimensions
     assert_equal 25, @qr.width

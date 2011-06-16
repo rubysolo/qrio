@@ -21,9 +21,6 @@ module Qrio
       instance.build_normalized_qr
       instance.find_alignment_pattern
 
-      instance.extract_format_information
-
-      # TODO : decode and set decoded flag
       instance
     end
 
@@ -185,34 +182,6 @@ module Qrio
         (test_x + @sampling_grid.block_width).round,
         (test_y + @sampling_grid.block_height).round
       )
-    end
-
-    FORMAT_MASK = 0b101_0100_0001_0010
-    def extract_format_information
-      bits = 0
-
-      0.upto(5) do |row_idx|
-        bits = bits << 1
-        bits += 1 if @qr[8, row_idx]
-      end
-
-      bits = bits << 1
-      bits += 1 if @qr[8, 7]
-      bits = bits << 1
-      bits += 1 if @qr[8, 8]
-      bits = bits << 1
-      bits += 1 if @qr[7, 8]
-
-      5.downto(0) do |col_idx|
-        bits = bits << 1
-        bits += 1 if @qr[col_idx, 8]
-      end
-
-      # puts (bits).to_s(2).rjust(15, '0')
-      # puts (FORMAT_MASK).to_s(2).rjust(15, '0')
-      # puts (bits ^ FORMAT_MASK).to_s(2).rjust(15, '0')
-      
-      # TODO check BCH error detection
     end
 
     private
