@@ -29,12 +29,12 @@ an image illustrating the intermediate steps to decoding:
 
 ## Dependencies
 
-Ruby 1.9.2 (will be backported to 1.8.7)
-ChunkyPNG (tested with version 1.2.0)
+* Ruby 1.9.2 (will be backported to 1.8.7)
+* ChunkyPNG (tested with version 1.2.0)
 
 ## STATUS
 
-*NOTE* QRio is not yet functional.  If you'd like to help out, fork and
+*NOTE* : QRio is not yet functional.  If you'd like to help out, fork and
 submit a tested pull request.  :)
 
 ### TODO
@@ -55,7 +55,7 @@ Yeah, it's coming along.  Here's what should be working now:
 * find and extract a QR code from an image.  I've been cheating
   somewhat, using image magick to threshold the image for me:
 
-    convert raw.jpg -colorspace Gray -lat 90x90-3% -median 1x1 cooked.png
+      convert raw.jpg -colorspace Gray -lat 90x90-3% -median 1x1 cooked.png
 
 * detect and correct orientation of extracted QR
 * extract modules via a sampling grid
