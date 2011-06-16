@@ -1,5 +1,3 @@
-require 'ruby-debug'
-
 module Qrio
   class QrMatrix < Matrix
     FORMAT_MASK = 0b101_0100_0001_0010
