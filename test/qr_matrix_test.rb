@@ -32,6 +32,8 @@ class TestQrMatrix < Test::Unit::TestCase
     assert @qr.in_finder_pattern?(8, 0)
     refute @qr.in_finder_pattern?(9, 0)
 
+    assert @qr.in_finder_pattern?(8, 3)
+
     assert @qr.in_alignment_line?(14, 6)
     assert @qr.in_alignment_line?(6, 14)
 
@@ -51,6 +53,16 @@ class TestQrMatrix < Test::Unit::TestCase
     blocks.each_with_index do |block, index|
       assert_equal index + 1, block
     end
+  end
+
+  def test_unmask
+    @qr[8,3] = false
+    assert_equal 0, @qr.mask_pattern
+
+    _, @masked = make_qr("masked0")
+    @qr.unmask
+
+    assert_equal @masked.blocks, @qr.blocks
   end
 
   private

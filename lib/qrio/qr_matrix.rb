@@ -7,6 +7,24 @@ module Qrio
       ERROR_CORRECTION_LEVEL[read_format[:error_correction]]
     end
 
+    def mask_pattern
+      read_format[:mask_pattern]
+    end
+
+    def unmask
+      p = [
+        lambda{|x,y| (x + y) % 2 == 0 }
+      ][mask_pattern]
+
+      0.upto(height - 1) do |y|
+        0.upto(width - 1) do |x|
+          if data_or_correction?(x, y)
+            self[x, y] = self[x, y] ^ p.call(x, y)
+          end
+        end
+      end
+    end
+
     def blocks
       @blocks = []
       @block  = []
