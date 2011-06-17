@@ -3,26 +3,11 @@ require 'test/unit'
 
 class TestQrMatrix < Test::Unit::TestCase
   def setup
-    data = block_test_qr.strip.gsub(/\|/, '').split(/\n/)
-
-    width  = data.first.length
-    height = data.length
-    off    = ' _.,'.split(//)
-    @bits  = data.join('').split(//).map{|s| ! off.include?(s) }
-
-    @qr = Qrio::QrMatrix.new(@bits, width, height)
+    @bits, @qr = make_qr("block_test")
   end
 
   def test_to_s
-    chars = @bits.map{|b| b ? '#' : ' ' }
-    string = []
-    while row = chars.slice!(0, @qr.width)
-      break if row.nil? || row.empty?
-      string << row.join
-    end
-    string << nil
-
-    assert_equal string.join("\n"), @qr.to_s
+    assert_equal bits_to_string(@bits, @qr.width), @qr.to_s
   end
 
   def test_format_detection
@@ -70,33 +55,28 @@ class TestQrMatrix < Test::Unit::TestCase
 
   private
 
-  def block_test_qr
-    qr_txt = <<-__END_QR__.gsub(/^\s+/, '')
-      |##|##|##|#| *| $|$$|.$|$_| #|##|##|##|
-      |# |  |  |#| *|$ |$$|..|_$| #|  |  | #|
-      |# |##|# |#| *|  |__|.$|__| #| #|##| #|
-      |# |##|# |#| *|  |_ |.$|_ | #| #|##| #|
-      |# |##|# |#| *|. |$$|_.|$ | #| #|##| #|
-      |# |  |  |#| *|$.|$$|__| $| #|  |  | #|
-      |##|##|##|#| %| %| %| %| %| #|##|##|##|
-      |  |  |  | | *|..|  |_$|  |  |  |  |  |
-      |**|**|**|%|**|..| $|_$| $|**|**|**|**|
-      | $|$_| $| |$$| $|.$| $|__|$$|.$|__|  |
-      |$ |$_|$ |%|__|$ |$$|  |_$|  |..|__|$ |
-      |$ |$_|$ | |$_|  |..| $|__|  |..|$_|  |
-      | $|_ |  |%|_ |$ |. |$$|_ |$$|_$|$_|  |
-      |X |$ |. | |$$|_ | $|. |  |  |_$|  |$$|
-      |XX|$ |$.|%|  |$_|$$|..| $|..|__|  |__|
-      |XX|$ |$.| |$ |__|  |.$|  |..|__|$ |__|
-      |XX| $|..|%| $|$_| $|$$| #|##|##| $|__|
-      |  |  |  | | *| $|$_| $|$#|  | #|__| $|
-      |##|##|##|#| *|$ |$$|  |$#| #| #|__|  |
-      |# |  |  |#| *|  |__|$$|$#|  | #|$_|  |
-      |# |##|# |#| *| $|_ |  |$#|##|##|$$|  |
-      |# |##|# |#| *|. |$ |. |__|$$|$_|  |$_|
-      |# |##|# |#| *|$.|$$|..|__|$.|_$|  |__|
-      |# |  |  |#| *|..|  |$$| $|  |__| $|__|
-      |##|##|##|#| *|.$| $|..|$$|  |__|  |__|
-    __END_QR__
+  def make_qr(which)
+    raw    = IO.read(File.expand_path("../fixtures/#{ which }.qr", __FILE__))
+    data   = raw.strip.gsub(/\|/, '').split(/\n/)
+
+    width  = data.first.length
+    height = data.length
+    off    = ' _.,'.split(//)
+
+    bits  = data.join('').split(//).map{|s| ! off.include?(s) }
+    [bits, Qrio::QrMatrix.new(bits, width, height)]
   end
+
+  def bits_to_string(bits, width)
+    chars = bits.map{|b| b ? '#' : ' ' }
+    string = []
+    while row = chars.slice!(0, width)
+      break if row.nil? || row.empty?
+      string << row.join
+    end
+    string << nil
+
+    string.join("\n")
+  end
+
 end
