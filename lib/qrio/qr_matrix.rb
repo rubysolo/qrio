@@ -38,6 +38,18 @@ module Qrio
       end
     end
 
+    def to_s
+      str = ""
+      rows.each do |row|
+        row.each do |m|
+          str << (m ? '#' : ' ')
+        end
+        str << "\n"
+      end
+
+      str
+    end
+
     def data_or_correction?(x, y)
       ! in_finder_pattern?(x, y)    &&
       ! in_alignment_pattern?(x, y) &&

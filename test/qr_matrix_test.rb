@@ -8,9 +8,21 @@ class TestQrMatrix < Test::Unit::TestCase
     width  = data.first.length
     height = data.length
     off    = ' _.,'.split(//)
-    bits   = data.join('').split(//).map{|s| ! off.include?(s) }
+    @bits  = data.join('').split(//).map{|s| ! off.include?(s) }
 
-    @qr = Qrio::QrMatrix.new(bits, width, height)
+    @qr = Qrio::QrMatrix.new(@bits, width, height)
+  end
+
+  def test_to_s
+    chars = @bits.map{|b| b ? '#' : ' ' }
+    string = []
+    while row = chars.slice!(0, @qr.width)
+      break if row.nil? || row.empty?
+      string << row.join
+    end
+    string << nil
+
+    assert_equal string.join("\n"), @qr.to_s
   end
 
   def test_format_detection
