@@ -1,6 +1,6 @@
 module Qrio
   class Qr
-    attr_reader :candidates, :matches, :finder_patterns, :qr_bounds
+    attr_reader :candidates, :matches, :finder_patterns, :qr_bounds, :qr
     include ImageDumper
 
     def initialize
@@ -137,7 +137,7 @@ module Qrio
       @sampling_grid.extracted_pixels do |x, y|
         bits << @extracted_matrix[x, y]
       end
-      @qr = Matrix.new(bits, @sampling_grid.logical_width, @sampling_grid.logical_height)
+      @qr = QrMatrix.new(bits, @sampling_grid.logical_width, @sampling_grid.logical_height)
 
       @translated_matches = {
         :horizontal => [],
