@@ -19,6 +19,52 @@ module Qrio
       :ascii        => { 1..9 =>  8, 10..26 => 16, 27..40 => 16 },
       :kanji        => { 1..9 =>  8, 10..26 => 10, 27..40 => 12 }
     }
+    ALIGNMENT_CENTERS = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74,  98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ]
 
     def error_correction_level
       ERROR_CORRECTION_LEVEL[read_format[:error_correction]]
@@ -102,8 +148,33 @@ module Qrio
     end
 
     def in_alignment_pattern?(x, y)
-      ((width  - 9)..(width  - 5)).include?(x) &&
-      ((height - 9)..(height - 5)).include?(y)
+      return false if version == 1
+
+      alignment_centers = ALIGNMENT_CENTERS[version - 1]
+
+      in_row = alignment_centers.any?{|c| (c - y).abs <= 2 }
+      in_col = alignment_centers.any?{|c| (c - x).abs <= 2 }
+
+      in_row && in_col
+    end
+
+    def draw_alignment_patterns
+      rows = ALIGNMENT_CENTERS[version - 1].dup
+      cols = rows.dup
+
+      cols.each do |cy|
+        rows.each do |cx|
+          unless in_finder_pattern?(cx, cy)
+            ((cy - 2)...(cy + 2)).each do |y|
+              ((cx - 2)...(cx + 2)).each do |x|
+                self[x, y] = (cx - x).abs == 2 ||
+                             (cy - y).abs == 2 ||
+                             (x == cx && y == cy)
+              end
+            end
+          end
+        end
+      end
     end
 
     def in_alignment_line?(x, y)

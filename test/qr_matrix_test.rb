@@ -37,6 +37,8 @@ class TestQrMatrix < Test::Unit::TestCase
     assert @qr.in_alignment_line?(14, 6)
     assert @qr.in_alignment_line?(6, 14)
 
+
+    assert_equal 2, @qr.version
     assert @qr.in_alignment_pattern?(16, 16)
     assert @qr.in_alignment_pattern?(18, 18)
     assert @qr.in_alignment_pattern?(20, 20)
@@ -46,6 +48,32 @@ class TestQrMatrix < Test::Unit::TestCase
 
     refute @qr.in_alignment_pattern?(21, 20)
     refute @qr.in_alignment_pattern?(20, 21)
+  end
+
+  def test_alignment_pattern_detection_by_version
+    # version one has no alignment patterns
+    v1 = Qrio::QrMatrix.new(Array.new(441, false), 21, 21)
+    assert_equal 1, v1.version
+
+    (0...20).each do |c|
+      refute v1.in_alignment_pattern?(c, c)
+    end
+
+    # construct versions 2 - 10 and verify alignment patterns
+    [18, 22, 26, 30, 34, [22, 38], [24, 42], [26, 46], [28, 50]].each_with_index do |ap_centers, index|
+      version = index + 2
+      dimension = version * 4 + 17
+      bits = Array.new(dimension * dimension, false)
+
+      qr = Qrio::QrMatrix.new(bits, dimension, dimension)
+      assert_equal version, qr.version
+
+      qr.draw_alignment_patterns
+      verify_alignment_centers(qr, *ap_centers)
+      qr.blocks.each do |block|
+        assert_equal 0, block
+      end
+    end
   end
 
   def test_read_blocks
@@ -66,6 +94,26 @@ class TestQrMatrix < Test::Unit::TestCase
   end
 
   private
+
+  def verify_alignment_centers(qr, *centers)
+    cols = *centers.dup
+    rows = *centers.dup
+
+    cols.each do |cy|
+      rows.each do |cx|
+        assert qr.in_alignment_pattern?(cx, cy), "(#{ cx }, #{ cy }) should be ap center (version #{ qr.version })"
+        assert qr.in_alignment_pattern?(cx - 2, cy - 2)
+        assert qr.in_alignment_pattern?(cx - 2, cy + 2)
+        assert qr.in_alignment_pattern?(cx + 2, cy - 2)
+        assert qr.in_alignment_pattern?(cx + 2, cy + 2)
+
+        refute qr.in_alignment_pattern?(cx - 3, cy - 2), "(#{ cx - 3}, #{ cy - 2}) should be outside alignment pattern (version #{ qr.version })"
+        refute qr.in_alignment_pattern?(cx - 2, cy - 3)
+        refute qr.in_alignment_pattern?(cx + 3, cy + 2)
+        refute qr.in_alignment_pattern?(cx + 2, cy + 3)
+      end
+    end
+  end
 
   def make_qr(which)
     raw    = IO.read(File.expand_path("../fixtures/#{ which }.qr", __FILE__))
