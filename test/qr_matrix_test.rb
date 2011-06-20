@@ -99,6 +99,10 @@ class TestQrMatrix < Test::Unit::TestCase
     cols = *centers.dup
     rows = *centers.dup
 
+    refute qr.in_alignment_pattern? 6, 6
+    refute qr.in_alignment_pattern? qr.width - 7, 8
+    refute qr.in_alignment_pattern? 8, qr.height - 7
+
     cols.each do |cy|
       rows.each do |cx|
         assert qr.in_alignment_pattern?(cx, cy), "(#{ cx }, #{ cy }) should be ap center (version #{ qr.version })"

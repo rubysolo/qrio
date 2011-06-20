@@ -152,10 +152,10 @@ module Qrio
 
       alignment_centers = ALIGNMENT_CENTERS[version - 1]
 
-      in_row = alignment_centers.any?{|c| (c - y).abs <= 2 }
-      in_col = alignment_centers.any?{|c| (c - x).abs <= 2 }
+      cy = alignment_centers.detect{|c| (c - y).abs <= 2 }
+      cx = alignment_centers.detect{|c| (c - x).abs <= 2 }
 
-      in_row && in_col
+      cx && cy && ! in_finder_pattern?(cx, cy)
     end
 
     def draw_alignment_patterns
