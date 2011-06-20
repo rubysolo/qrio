@@ -11,7 +11,7 @@ class TestQrMatrix < Test::Unit::TestCase
   end
 
   def test_format_detection
-    @qr[8, 1] = false
+    @qr[1, 8] = false
     assert_equal 'M', @qr.error_correction_level
   end
 
@@ -56,7 +56,7 @@ class TestQrMatrix < Test::Unit::TestCase
   end
 
   def test_unmask
-    @qr[8,3] = false
+    @qr[3,8] = false
     assert_equal 0, @qr.mask_pattern
 
     _, @masked = make_qr("masked0")
