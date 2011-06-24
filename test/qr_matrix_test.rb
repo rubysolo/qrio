@@ -70,16 +70,16 @@ class TestQrMatrix < Test::Unit::TestCase
 
       qr.draw_alignment_patterns
       verify_alignment_centers(qr, *ap_centers)
-      qr.blocks.each do |block|
-        assert_equal 0, block
+      qr.raw_bytes.each do |byte|
+        assert_equal 0, byte
       end
     end
   end
 
-  def test_read_blocks
-    blocks = @qr.blocks
-    blocks.each_with_index do |block, index|
-      assert_equal index + 1, block
+  def test_read_raw_bytes
+    bytes = @qr.raw_bytes
+    bytes.each_with_index do |byte, index|
+      assert_equal index + 1, byte
     end
   end
 
@@ -90,7 +90,7 @@ class TestQrMatrix < Test::Unit::TestCase
     _, @masked = make_qr("masked0")
     @qr.unmask
 
-    assert_equal @masked.blocks, @qr.blocks
+    assert_equal @masked.raw_bytes, @qr.raw_bytes
   end
 
   private
@@ -119,8 +119,12 @@ class TestQrMatrix < Test::Unit::TestCase
     end
   end
 
+  def fixture_content(filename)
+    IO.read(File.expand_path("../fixtures/#{ filename }", __FILE__))
+  end
+
   def make_qr(which)
-    raw    = IO.read(File.expand_path("../fixtures/#{ which }.qr", __FILE__))
+    raw    = fixture_content("#{ which }.qr")
     data   = raw.strip.gsub(/\|/, '').split(/\n/)
 
     width  = data.first.length

@@ -85,9 +85,9 @@ module Qrio
         lambda{|x,y| y % 3 == 0 },
         lambda{|x,y| (x + y) % 3 == 0 },
         lambda{|x,y| ((x / 2) + (y / 3)) % 2 == 0 },
-        lambda{|x,y| ((x * y) % 2) + ((x * y) % 3) == 0 },
-        lambda{|x,y| (((x * y) % 2) + ((x * y) % 3) % 2) == 0 },
-        lambda{|x,y| (((x * y) % 3) + ((x + y) % 2) % 2) == 0 }
+        lambda{|x,y| prod = x * y;   (prod % 2) + (prod % 3) == 0 },
+        lambda{|x,y| prod = x * y; (((prod % 2) + (prod % 3)) % 2) == 0 },
+        lambda{|x,y| prod = x * y; sum = x + y; (((prod % 3) + (sum % 2)) % 2) == 0 }
       ][mask_pattern]
 
       raise "could not load mask pattern #{ mask_pattern }" unless p
@@ -103,10 +103,10 @@ module Qrio
       @unmasked = ! @unmasked
     end
 
-    def blocks
-      @read_blocks ||= read_blocks
+    # raw bytestream, as read from the QR symbol
+    def raw_bytes
+      @raw_bytes ||= read_raw_bytes
     end
-
 
     def to_s
       str = ""
@@ -199,7 +199,7 @@ module Qrio
 
       bits.times do |i|
         block_index, bit_index = @pointer.divmod(8)
-        data = blocks[block_index]
+        data = raw_bytes[block_index]
         binary << (((data >> (7 - bit_index)) & 1) == 1)
         @pointer += 1
       end
@@ -207,9 +207,9 @@ module Qrio
       binary.map{|b| b ? '1' : '0' }.join.to_i(2)
     end
 
-    def read_blocks
-      @blocks = []
-      @block  = []
+    def read_raw_bytes
+      @raw_bytes = []
+      @byte      = []
 
       (0..(width - 3)).step(2) do |bcol|
         bcol = width - 1 - bcol
@@ -224,16 +224,16 @@ module Qrio
         end
       end
 
-      @blocks
+      @raw_bytes
     end
 
     def add_bit(x, y)
       if data_or_correction?(x, y)
-        @block.push self[x, y]
+        @byte.push self[x, y]
 
-        if @block.length == 8
-          @blocks << @block.map{|b| b ? '1' : '0' }.join.to_i(2)
-          @block = []
+        if @byte.length == 8
+          @raw_bytes << @byte.map{|b| b ? '1' : '0' }.join.to_i(2)
+          @byte = []
         end
       end
     end
