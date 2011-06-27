@@ -93,6 +93,20 @@ class TestQrMatrix < Test::Unit::TestCase
     assert_equal @masked.raw_bytes, @qr.raw_bytes
   end
 
+  def test_text
+    _, qrio = make_qr("qrio")
+    qrio.unmask
+    assert_equal fixture_content("qrio-codewords.txt").split("\n"),
+                 qrio.raw_bytes.map{|b| b.to_s(2).rjust(8, '0') }
+
+    assert_equal 4,   qrio.version
+    assert_equal 'H', qrio.error_correction_level
+    assert_equal 4,   qrio.block_count
+    assert_equal 16,  qrio.ecc_bytes_per_block
+
+    assert_equal "https://github.com/rubysolo/qrio", qrio.text
+  end
+
   private
 
   def verify_alignment_centers(qr, *centers)
