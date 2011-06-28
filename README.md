@@ -39,7 +39,7 @@ submit a tested pull request.  :)
 
 ### TODO
 
-* interpret raw bytes according to QR type and output QR content
+* support numeric / alphanumeric / kanji QR codes
 * refine alignment pattern location and adjust module sampling grid
   accordingly
 * error correction support
@@ -59,6 +59,8 @@ Yeah, it's coming along.  Here's what should be working now:
 
 * detect and correct orientation of extracted QR
 * extract modules via a sampling grid
-* extract bytes from data / error correction blocks
+* extract raw bytes from data / error correction blocks
+* de-interlace blocks into final bitstream
+* extract text from bitstream (ascii mode only)
 
 
