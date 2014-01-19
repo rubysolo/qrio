@@ -34,7 +34,7 @@ an image illustrating the intermediate steps to decoding:
 
 ## STATUS
 
-*NOTE* : QRio is not yet functional.  If you'd like to help out, fork and
+*NOTE* : QRio is not yet fully functional.  If you'd like to help out, fork and
 submit a tested pull request.  :)
 
 ### TODO
