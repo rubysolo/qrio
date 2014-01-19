@@ -7,7 +7,7 @@ QRio is a QR code decoder for Ruby
 QRio can extract QR contents in one step:
 
     require 'qrio'
-    puts Qrio::Qr.load("some-image.png").text
+    puts Qrio::Qr.load("some-image.png").qr.text
 
 If you know / are curious about the decoding process, QRio can generate
 an image illustrating the intermediate steps to decoding:
@@ -39,7 +39,7 @@ submit a tested pull request.  :)
 
 ### TODO
 
-* support numeric / alphanumeric / kanji QR codes
+* support numeric / alphanumeric / kanji mode QR codes
 * refine alignment pattern location and adjust module sampling grid
   accordingly
 * error correction support
