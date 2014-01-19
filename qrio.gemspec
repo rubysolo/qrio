@@ -9,8 +9,9 @@ Gem::Specification.new do |s|
   s.authors     = ["Solomon White"]
   s.email       = ["rubysolo@gmail.com"]
   s.homepage    = "http://github.com/rubysolo/qrio"
-  s.summary     = %q{QR Code decoder}
-  s.description = %q{Decode QR Codes.  Like a boss.}
+  s.licenses    = %w(MIT)
+  s.summary     = %q(QR code decoder)
+  s.description = %q(QR code decoder in pure Ruby)
 
   s.add_runtime_dependency "chunky_png"
 

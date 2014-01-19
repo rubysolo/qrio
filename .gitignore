@@ -1,5 +1,6 @@
 .bundle
 .rvmrc
+*.gem
 Gemfile.lock
 vendor/bundle
 tmp
