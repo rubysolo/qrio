@@ -37,50 +37,57 @@ module Qrio
         end
       end
 
-      if options[:annotate].include?(:candidates)
-        @features[:candidates][:horizontal].each do |hmatch|
-          png.rect(*hmatch.to_coordinates, color(:green))
-        end
-
-        @features[:candidates][:vertical].each do |vmatch|
-          png.rect(*vmatch.to_coordinates, color(:magenta))
-        end
-      end
-
-      if options[:annotate].include?(:matches)
-        @features[:matches][:horizontal].each do |hmatch|
-          png.rect(*hmatch.to_coordinates, color(:green))
-        end
-
-        @features[:matches][:vertical].each do |vmatch|
-          png.rect(*vmatch.to_coordinates, color(:magenta))
-        end
-      end
-
-      if options[:annotate].include?(:finder_patterns)
-        @features[:finder_patterns].each do |finder_pattern|
-          png.rect(*finder_pattern.to_coordinates, color(:red))
-        end
-      end
-
-      if options[:annotate].include?(:angles)
-        @sampling_grid.angles[0, 100].each do |angle|
-          png.line_xiaolin_wu(*angle.to_coordinates, color(:cyan))
-        end
-      end
-
-      if options[:annotate].include?(:alignment_patterns)
-        png.rect(*@alignment_pattern.to_coordinates, color(:magenta))
-      end
-
-      if options[:annotate].include?(:extracted_pixels)
-        @sampling_grid.extracted_pixels do |x, y|
-          png.circle(x, y, 1, color(:cyan))
-        end
-      end
+      png = extract_options(png, options)
 
       png = png.crop(*@qr_bounds.to_point_size) if options[:crop]
       png.save(filename, :fast_rgba)
+    end
+
+    def extract_options(png, options)
+      if options[:annotate]
+        if options[:annotate].include?(:candidates)
+          @features[:candidates][:horizontal].each do |hmatch|
+            png = png.rect(*hmatch.to_coordinates, color(:green))
+          end
+
+          @features[:candidates][:vertical].each do |vmatch|
+            png = png.rect(*vmatch.to_coordinates, color(:magenta))
+          end
+        end
+
+        if options[:annotate].include?(:matches)
+          @features[:matches][:horizontal].each do |hmatch|
+           png = png.rect(*hmatch.to_coordinates, color(:green))
+          end
+
+          @features[:matches][:vertical].each do |vmatch|
+           png = png.rect(*vmatch.to_coordinates, color(:magenta))
+          end
+        end
+
+        if options[:annotate].include?(:finder_patterns)
+          @features[:finder_patterns].each do |finder_pattern|
+            png =  png.rect(*finder_pattern.to_coordinates, color(:red))
+          end
+        end
+
+        if options[:annotate].include?(:angles)
+          @sampling_grid.angles[0, 100].each do |angle|
+           png =  png.line_xiaolin_wu(*angle.to_coordinates, color(:cyan))
+          end
+        end
+
+        if options[:annotate].include?(:alignment_patterns)
+          png = png.rect(*@alignment_pattern.to_coordinates, color(:magenta))
+        end
+
+        if options[:annotate].include?(:extracted_pixels)
+          @sampling_grid.extracted_pixels do |x, y|
+            png = png.circle(x, y, 1, color(:cyan))
+          end
+        end
+      end
+      png
     end
 
     def color(name)
