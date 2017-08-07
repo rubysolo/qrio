@@ -23,6 +23,22 @@ module Qrio
 
       instance
     end
+    
+    def self.load_lite(filename)
+      instance = new
+      instance.load_image(filename)
+  
+      instance.scan(:horizontal)
+      instance.scan(:vertical)
+  
+      instance.filter_candidates
+      instance.find_intersections
+
+      instance.build_normalized_qr
+      instance.find_alignment_pattern
+
+      instance
+    end
 
     def load_image(filename)
       initialize_storage
